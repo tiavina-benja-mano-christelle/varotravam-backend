@@ -1,5 +1,6 @@
 package mg.company.varotravam.models;
 
+import java.sql.SQLException;
 import java.util.Vector;
 
 import java.sql.Connection;
@@ -32,7 +33,7 @@ public class BoiteVitesse {
     public BoiteVitesse() {
     }
 
-    public Vector<BoiteVitesse> getAllBoiteVitesse(Connection connection){
+    public Vector<BoiteVitesse> getAllBoiteVitesse(Connection connection)throws SQLException,Exception{
         Vector<BoiteVitesse> vitesses = new Vector<>();
         boolean wasConnected = true;
 
@@ -61,7 +62,7 @@ public class BoiteVitesse {
         return vitesses;
     }
 
-    public BoiteVitesse findById (Connection connection, int id) throws Exception{
+    public BoiteVitesse findById (Connection connection, int id) throws  SQLException,Exception{
         BoiteVitesse model = null;
         boolean wasConnected = true;
         if(connection == null) {
@@ -91,7 +92,7 @@ public class BoiteVitesse {
         }
     }
 
-    public void saveBoiteVitesse(Connection connection, String nom) throws SQLException {
+    public void saveBoiteVitesse(Connection connection, String nom) throws  SQLException,Exception{
         boolean wasConnected = true;
 
         if(connection == null) {
