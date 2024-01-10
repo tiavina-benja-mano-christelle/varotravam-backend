@@ -1,5 +1,6 @@
 package mg.company.varotravam.models;
 
+import java.sql.SQLException;
 import java.util.Vector;
 
 import java.sql.Connection;
@@ -32,7 +33,7 @@ public class Categorie {
     public Categorie() {
     }
 
-    public Vector<Categorie> getAllCategorie(Connection connection){
+    public Vector<Categorie> getAllCategorie(Connection connection)throws  SQLException,Exception{
         Vector<Categorie> categories = new Vector<>();
         boolean wasConnected = true;
 
@@ -91,7 +92,7 @@ public class Categorie {
         }
     }
 
-    public void saveCategorie(Connection connection, String nom) throws SQLException {
+    public void saveCategorie(Connection connection, String nom) throws  SQLException,Exception{
         boolean wasConnected = true;
 
         if(connection == null) {
