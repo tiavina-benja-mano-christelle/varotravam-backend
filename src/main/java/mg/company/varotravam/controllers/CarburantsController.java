@@ -32,7 +32,7 @@ public class CarburantsController extends MonController {
         return new ResponseEntity<Bag>(bag, HttpStatus.OK);
     }
 
-    @PostMapping("/ajouter")
+    @PostMapping("")
     public ResponseEntity<Bag> ajouter(@RequestBody Carburant carburant) {
         try {
             carburant.saveCarburant(null);

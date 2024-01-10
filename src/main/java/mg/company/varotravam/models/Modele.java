@@ -9,7 +9,7 @@ import java.sql.Statement;
 import java.util.Vector;
 
 public class Modele {
-    int id,marque_id;
+    int id,marqueId;
     String nom;
 //--GETTERS && SETTERS
     public int getId() {
@@ -20,12 +20,12 @@ public class Modele {
         this.id = id;
     }
 
-    public int getMarque_id() {
-        return marque_id;
+    public int getMarqueId() {
+        return marqueId;
     }
 
-    public void setMarque_id(int marque_id) {
-        this.marque_id = marque_id;
+    public void setMarqueId(int marqueId) {
+        this.marqueId = marqueId;
     }
 
     public String getNom() {
@@ -37,17 +37,17 @@ public class Modele {
     }
 //--CONSTRUCTORS
     public Modele() {}
-    public Modele(String nom, int marque_id) {
-        this.setMarque_id(marque_id);
+    public Modele(String nom, int marqueId) {
+        this.setMarqueId(marqueId);
         this.setNom(nom);
     }
-    public Modele(int id, String nom, int marque_id) {
+    public Modele(int id, String nom, int marqueId) {
         this.setId(id);
-        this.setMarque_id(marque_id);
+        this.setMarqueId(marqueId);
         this.setNom(nom);
     }
 //--FONCTION
-public void saveModele(Connection connection, String nom,int marque_id) throws Exception {
+public void saveModele(Connection connection) throws Exception {
     boolean wasConnected = true;
 
     if (connection == null) {
@@ -57,8 +57,8 @@ public void saveModele(Connection connection, String nom,int marque_id) throws E
     String sql = "insert into modele (id,nom,marque_id) values(default, ?, ?)";
 
     try (PreparedStatement statement = connection.prepareStatement(sql)) {
-        statement.setString(1, nom);
-        statement.setInt(2, marque_id);
+        statement.setString(1, getNom());
+        statement.setInt(2, getMarqueId());
         statement.executeUpdate();
     } catch (Exception e) {e.printStackTrace();
     } finally {if (!wasConnected) {connection.close();}}
@@ -79,7 +79,7 @@ public void saveModele(Connection connection, String nom,int marque_id) throws E
                 Modele m = new Modele();
                 m.setId(resultSet.getInt("id"));
                 m.setNom(resultSet.getString("nom"));
-                m.setMarque_id(resultSet.getInt("marque_id"));
+                m.setMarqueId(resultSet.getInt("marque_id"));
                 marque.add(m);
             }
         } catch (Exception e) {e.printStackTrace();
@@ -102,14 +102,14 @@ public void saveModele(Connection connection, String nom,int marque_id) throws E
                 m = new Modele();
                 m.setId(rs.getInt("id"));
                 m.setNom(rs.getString("nom"));
-                m.setMarque_id(rs.getInt("marque_id"));
+                m.setMarqueId(rs.getInt("marqueId"));
             }
             return m;
         } catch (Exception e) {e.printStackTrace();
         } finally {if (!wasConnected) {connection.close();}}
         return m;
     }
-    public  void updateModele(Connection connection,  int id,String nomM,int marque_idM)throws Exception{
+    public  void updateModele(Connection connection,  int id,String nomM,int marqueIdM)throws Exception{
         boolean wasConnected = true;
         try{
             if (connection == null) {
@@ -117,7 +117,7 @@ public void saveModele(Connection connection, String nom,int marque_id) throws E
                 connection = DBConnection.getConnection();
             }
             Statement stmt = connection.createStatement();
-            String sql = "UPDATE modele set  nom ='"+nomM+"' and marque_id ="+marque_idM+"  where  id ="+id;
+            String sql = "UPDATE modele set  nom ='"+nomM+"' and marque_id ="+marqueIdM+"  where  id ="+id;
             System.out.println(sql);
             stmt.executeUpdate(sql);
         } catch (Exception e) {e.printStackTrace();

@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequestMapping("/api/v1/boite-vitesses")
 public class BoiteVitessesController extends MonController {
     
-    @GetMapping("")
+    @GetMapping
     public ResponseEntity<Bag> recupererTout() {
         try {
             bag.setData(new BoiteVitesse().getAllBoiteVitesse(null));
@@ -31,7 +31,7 @@ public class BoiteVitessesController extends MonController {
         return new ResponseEntity<Bag>(bag, HttpStatus.OK);
     }
 
-    @PostMapping("/ajouter")
+    @PostMapping
     public ResponseEntity<Bag> ajouter(@RequestBody BoiteVitesse boiteVitesse) {
         try {
             boiteVitesse.saveBoiteVitesse(null);

@@ -46,7 +46,7 @@ public class Marque {
     }
 
 //--FONCTION
-    public void saveMarque(Connection connection, String nom) throws Exception {
+    public void saveMarque(Connection connection) throws Exception {
         boolean wasConnected = true;
 
         if (connection == null) {
@@ -56,7 +56,7 @@ public class Marque {
         String sql = "insert into marque (id, nom) values(default, ?)";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, nom);
+            statement.setString(1, getNom());
             statement.executeUpdate();
         } catch (Exception e) {e.printStackTrace();
         } finally {if (!wasConnected) {connection.close();}}

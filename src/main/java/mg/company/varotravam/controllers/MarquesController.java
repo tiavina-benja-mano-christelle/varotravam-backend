@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletRequest;
+import mg.company.varotravam.models.Marque;
 import mg.company.varotravam.utils.Bag;
 
 @RestController
@@ -23,14 +24,12 @@ public class MarquesController extends MonController {
      */
     @GetMapping
     public ResponseEntity<Bag> recupererTout(HttpServletRequest request) {
-        // try {
-        //     bag.setData(new Categorie().getAllCategorie(null));
-        //     if (1==1) throw new SQLException();
-        //     throw new ClassNotFoundException();
-        // } catch (ClassNotFoundException | SQLException e) {
-        //     bag.setError(e.getMessage());
-        //     return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);
-        // }
+        try {
+            bag.setData(new Marque().getAllMarque(null));
+        } catch (Exception e) {
+            bag.setError(e.getMessage());
+            return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         return new ResponseEntity<Bag>(bag, HttpStatus.OK);
     }
 
@@ -39,13 +38,13 @@ public class MarquesController extends MonController {
      * @param marque
      * @return
      */
-    @PostMapping("/ajouter")
-    public ResponseEntity<Bag> ajouter(@RequestBody Object marque, HttpServletRequest request) {
-        // try {
-        //     categorie.saveCategorie(null);
-        // } catch (Exception e) {
-        //     return new ResponseEntity<Bag>(bag, null);
-        // }
+    @PostMapping
+    public ResponseEntity<Bag> ajouter(@RequestBody Marque marque, HttpServletRequest request) {
+        try {
+            marque.saveMarque(null);
+        } catch (Exception e) {
+            return new ResponseEntity<Bag>(bag, null);
+        }
         return new ResponseEntity<Bag>(bag, HttpStatus.OK);
     }
     

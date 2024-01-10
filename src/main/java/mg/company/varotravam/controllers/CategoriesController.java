@@ -41,7 +41,7 @@ public class CategoriesController extends MonController{
      * @param categorie
      * @return
      */
-    @PostMapping("/ajouter")
+    @PostMapping
     public ResponseEntity<Bag> AjouterCategorie(@RequestBody Categorie categorie, HttpServletRequest request) {
         try {
             categorie.saveCategorie(null);
