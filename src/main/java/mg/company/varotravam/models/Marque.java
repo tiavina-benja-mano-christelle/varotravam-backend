@@ -1,4 +1,4 @@
-package mg.company.varotravam.model;
+package mg.company.varotravam.models;
 
 /**
  * Marque
