@@ -13,6 +13,17 @@ public class Utilisateur {
     String motDePasse;
     boolean administrateur;
 
+    /**
+     * Récupère l'utilisateur par son identifiant
+     * @param id
+     * @param connection
+     * @return
+     */
+    public static Utilisateur chercherParId(int id, Connection connection) {
+        //TODO: implementer la recherche d'utilisateur par ID
+        return new Utilisateur();
+    }
+
     public static Utilisateur verifierAdministrateur(String nom, String password) throws Exception {
         try {
             Utilisateur utilisateur = chercherAdministrateurParNomOuEmail(nom, null);
