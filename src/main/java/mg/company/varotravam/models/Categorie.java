@@ -1,5 +1,6 @@
 package mg.company.varotravam.models;
 
+import java.sql.SQLException;
 import java.util.Vector;
 
 import java.sql.Connection;

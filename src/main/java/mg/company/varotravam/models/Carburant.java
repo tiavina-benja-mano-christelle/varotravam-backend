@@ -1,5 +1,6 @@
 package mg.company.varotravam.models;
 
+import java.sql.SQLException;
 import java.util.Vector;
 
 import java.sql.Connection;
@@ -63,7 +64,7 @@ public class Carburant {
         return carburants;
     }
 
-    public Carburant findById (Connection connection, int id) throws Exception{
+    public Carburant findById (Connection connection, int id) throws  SQLException,Exception{
         Carburant model = null;
         boolean wasConnected = true;
         if(connection == null) {
