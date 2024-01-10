@@ -43,7 +43,6 @@ public class DBConnection {
         try {
             Class.forName(DRIVER);
             connection = DriverManager.getConnection(URL, USER, PASSWORD);
-            System.out.println("Connected");
         } catch (ClassNotFoundException e) {
             System.err.println("Le pilote PostgreSQL n'a pas été trouvé.");
             throw e;

@@ -3,8 +3,8 @@ package mg.company.varotravam.controllers;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.servlet.http.HttpServletRequest;
-import mg.company.varotravam.models.Categorie;
+import mg.company.varotravam.models.BoiteVitesse;
+import mg.company.varotravam.models.Carburant;
 import mg.company.varotravam.utils.Bag;
 
 import java.sql.SQLException;
@@ -18,35 +18,27 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
-@RequestMapping("/api/v1/categories")
-public class CategoriesController extends MonController{
+@RequestMapping("/api/v1/carburants")
+public class CarburantsController extends MonController {
     
-    /**
-     * Récupère tous les categories de véhicules
-     * @return
-     */
-    @GetMapping
-    public ResponseEntity<Bag> recupererTout(HttpServletRequest request) {
+    @GetMapping("")
+    public ResponseEntity<Bag> recupererTout() {
         try {
-            bag.setData(new Categorie().getAllCategorie(null));
-        } catch (ClassNotFoundException | SQLException e) {
+            bag.setData(new Carburant().getAllCarburant(null));
+        } catch (SQLException | ClassNotFoundException e) {
             bag.setError(e.getMessage());
             return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<Bag>(bag, HttpStatus.OK);
     }
 
-    /**
-     * Ajouter une nouvelle categorie de véhicule
-     * @param categorie
-     * @return
-     */
     @PostMapping("/ajouter")
-    public ResponseEntity<Bag> AjouterCategorie(@RequestBody Categorie categorie, HttpServletRequest request) {
+    public ResponseEntity<Bag> ajouter(@RequestBody Carburant carburant) {
         try {
-            categorie.saveCategorie(null);
-        } catch (Exception e) {
-            return new ResponseEntity<Bag>(bag, null);
+            carburant.saveCarburant(null);
+        } catch (SQLException | ClassNotFoundException e) {
+            bag.setError(e.getMessage());
+            return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<Bag>(bag, HttpStatus.OK);
     }

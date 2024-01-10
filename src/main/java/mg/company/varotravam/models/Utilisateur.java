@@ -94,7 +94,7 @@ public class Utilisateur {
         }
 
         try {
-            String sql = "SELECT * FROM v_utilisateur_administrateur WHERE email=? OR nom=?";
+            String sql = "SELECT * FROM v_utilisateur_admin WHERE email=? OR nom=?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setString(1, valeur);
                 stmt.setString(2, valeur);

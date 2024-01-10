@@ -5,6 +5,8 @@ import java.util.Vector;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import mg.company.varotravam.utils.DBConnection;
 
 public class Categorie {
@@ -29,10 +31,14 @@ public class Categorie {
         this.nom = nom;
     }
 
+    public Categorie(String nom) {
+        this.nom = nom;
+    }
+
     public Categorie() {
     }
 
-    public Vector<Categorie> getAllCategorie(Connection connection){
+    public Vector<Categorie> getAllCategorie(Connection connection) throws ClassNotFoundException, SQLException{
         Vector<Categorie> categories = new Vector<>();
         boolean wasConnected = true;
 
@@ -91,7 +97,7 @@ public class Categorie {
         }
     }
 
-    public void saveCategorie(Connection connection, String nom) throws SQLException {
+    public void saveCategorie(Connection connection) throws SQLException, ClassNotFoundException {
         boolean wasConnected = true;
 
         if(connection == null) {
@@ -101,7 +107,7 @@ public class Categorie {
         String sql = "insert into categorie(id, nom) values(default, ?)";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, nom);
+            statement.setString(1, getNom());
             statement.executeUpdate();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
