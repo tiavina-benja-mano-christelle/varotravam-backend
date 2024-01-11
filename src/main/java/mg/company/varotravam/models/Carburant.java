@@ -1,10 +1,13 @@
 package mg.company.varotravam.models;
 
+import java.sql.SQLException;
 import java.util.Vector;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import mg.company.varotravam.utils.DBConnection;
 
 public class Carburant {
@@ -32,7 +35,7 @@ public class Carburant {
     public Carburant() {
     }
 
-    public Vector<Carburant> getAllCarburant(Connection connection){
+    public Vector<Carburant> getAllCarburant(Connection connection) throws SQLException, ClassNotFoundException{
         Vector<Carburant> carburants = new Vector<>();
         boolean wasConnected = true;
 
@@ -61,7 +64,7 @@ public class Carburant {
         return carburants;
     }
 
-    public Carburant findById (Connection connection, int id) throws Exception{
+    public Carburant findById (Connection connection, int id) throws  SQLException,Exception{
         Carburant model = null;
         boolean wasConnected = true;
         if(connection == null) {
@@ -91,7 +94,7 @@ public class Carburant {
         }
     }
 
-    public void saveCarburant(Connection connection, String nom) throws SQLException {
+    public void saveCarburant(Connection connection) throws SQLException, ClassNotFoundException {
         boolean wasConnected = true;
 
         if(connection == null) {
@@ -102,7 +105,7 @@ public class Carburant {
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) 
         {
-            statement.setString(1, nom);
+            statement.setString(1, this.getNom());
             statement.executeUpdate();
         } catch (SQLException throwables) {
             throwables.printStackTrace();

@@ -13,6 +13,17 @@ public class Utilisateur {
     String motDePasse;
     boolean administrateur;
 
+    /**
+     * Récupère l'utilisateur par son identifiant
+     * @param id
+     * @param connection
+     * @return
+     */
+    public static Utilisateur chercherParId(int id, Connection connection) {
+        //TODO: implementer la recherche d'utilisateur par ID
+        return new Utilisateur();
+    }
+
     public static Utilisateur verifierAdministrateur(String nom, String password) throws Exception {
         try {
             Utilisateur utilisateur = chercherAdministrateurParNomOuEmail(nom, null);
@@ -83,7 +94,7 @@ public class Utilisateur {
         }
 
         try {
-            String sql = "SELECT * FROM v_utilisateur_administrateur WHERE email=? OR nom=?";
+            String sql = "SELECT * FROM v_utilisateur_admin WHERE email=? OR nom=?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setString(1, valeur);
                 stmt.setString(2, valeur);

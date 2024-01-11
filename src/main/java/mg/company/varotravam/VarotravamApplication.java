@@ -19,6 +19,9 @@ public class VarotravamApplication {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/authentification/utilisateur").allowedOrigins("*");
+				registry.addMapping("/authentification/administrateur").allowedOrigins("*");
+				registry.addMapping("/api/v1/categories").allowedOrigins("*");
+				registry.addMapping("/api/v1/categories/ajouter").allowedOrigins("*");
 			}
 		};
 	}
