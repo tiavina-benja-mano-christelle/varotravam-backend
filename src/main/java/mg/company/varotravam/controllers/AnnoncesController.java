@@ -93,12 +93,4 @@ public class AnnoncesController extends MonController {
         //TODO: implementer l'ajout de l'annonce en favori
         return new ResponseEntity<Bag>(HttpStatus.OK);
     }
-    
-    
-
-    
-
-
-    
-
 }
