@@ -92,6 +92,7 @@ public class AnnoncesController extends MonController {
      */
     @GetMapping
     public ResponseEntity<Bag> annonceActif() {
+        Bag bag = new Bag();
         try {
             bag.setData(new Annonce().findDispo(null));
         } catch (Exception e) {
@@ -130,6 +131,7 @@ public class AnnoncesController extends MonController {
      */
     @GetMapping("/favorites")
     public ResponseEntity<Bag> annonceFavorites(HttpServletRequest request) {
+        Bag bag = new Bag();
         try {
             String token = request.getHeader("authorization");
             int subject = JWTtokens.checkBearer(token);
@@ -148,6 +150,7 @@ public class AnnoncesController extends MonController {
      */
     @PostMapping("/favorites")
     public ResponseEntity<Bag> ajouterAuxFavori(@RequestBody int idAnnonce, HttpServletRequest request) {
+        Bag bag = new Bag();
         try {
             String token = request.getHeader("authorization");
             int subject = JWTtokens.checkBearer(token);
@@ -169,6 +172,7 @@ public class AnnoncesController extends MonController {
      */
     @DeleteMapping("/favorites")
     public ResponseEntity<Bag> enleverDesFavori(@RequestBody int idAnnonce, HttpServletRequest request) {
+        Bag bag = new Bag();
         try {
             String token = request.getHeader("authorization");
             int subject = JWTtokens.checkBearer(token);
