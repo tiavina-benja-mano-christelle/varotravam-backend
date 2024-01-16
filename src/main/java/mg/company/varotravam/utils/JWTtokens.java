@@ -11,40 +11,53 @@ import java.util.Date;
 
 public class JWTtokens {
 
-    private static final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-
-    public static String create(String subject, long ttlMillis) {
-        Date now = new Date();
-        Date expiration = new Date(now.getTime() + ttlMillis);
+    private static final Key secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    
+    /**
+     * Crée un nouveau token
+     * @param subject
+     * @return 
+     */
+    public static String create(Integer subject) {
+        return create(String.valueOf(subject));
+    }
+    
+    /**
+     * Crée un nouveau token
+     * @param subject
+     * @return 
+     */
+    public static String create(String subject) {
         return Jwts.builder()
                 .setSubject(subject)
-                .setIssuedAt(now)
-                .setExpiration(expiration)
-                .signWith(SECRET_KEY)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 86400000))
+                .signWith(secretKey)
                 .compact();
     }
 
-    public static String create(int subject, long ttlMillis) {
-        return create(String.valueOf(subject), ttlMillis);
-    }
-
-    public static Claims check(String jwt) throws Exception {
+    /**
+     * retourne le sujet si le token est valide
+     * @param jwt
+     * @return
+     * @throws Exception 
+     */
+    public static int check(String jwt) throws Exception {
         try {
-            Jws<Claims> claimsJws = Jwts.parserBuilder()
-                    .setSigningKey(SECRET_KEY)
-                    .build()
-                    .parseClaimsJws(jwt);
-            Claims claims = claimsJws.getBody();
-            System.out.println("Subject: " + claims.getSubject());
-            System.out.println("Issued At: " + claims.getIssuedAt());
-            System.out.println("Expiration: " + claims.getExpiration());
-            return claims;
+            Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(jwt);
+            return extractSubject(jwt);
         } catch (Exception e) {
-            throw new Exception("NOT AUTHORIZED");
+            throw e;
         }
     }
-
-    public static Claims checkBearer(String jwt) throws Exception {
+    
+    /**
+     * Verify si le tokens est bearer et retourne le sujet si le token est valide
+     * @param jwt
+     * @return
+     * @throws Exception 
+     */
+    public static int checkBearer(String jwt) throws Exception {
         try {
             if (jwt != null && jwt.startsWith("Bearer ")) {
                 String token = jwt.substring(7); 
@@ -54,6 +67,21 @@ public class JWTtokens {
             throw e;
         }
         throw new Exception("NOT AUTHORIZED");
+    }
+
+    /**
+     * Récupère le sujet dans le token
+     * @param jwt
+     * @return
+     * @throws Exception 
+     */
+    private static int extractSubject(String jwt) throws Exception {
+        try {
+            Claims claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(jwt).getBody();
+            return Integer.parseInt(claims.getSubject());
+        } catch (Exception e) {
+            throw e;
+        }
     }
 
 }

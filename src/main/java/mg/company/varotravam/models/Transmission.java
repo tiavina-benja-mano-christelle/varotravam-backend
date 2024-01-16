@@ -10,7 +10,7 @@ import java.sql.SQLException;
 
 import mg.company.varotravam.utils.DBConnection;
 
-public class Carburant {
+public class Transmission {
     int id;
     String nom;
 
@@ -27,16 +27,16 @@ public class Carburant {
         this.nom = nom;
     }
 
-    public Carburant(int id, String nom) {
+    public Transmission(int id, String nom) {
         this.id = id;
         this.nom = nom;
     }
 
-    public Carburant() {
+    public Transmission() {
     }
 
-    public Vector<Carburant> getAllCarburant(Connection connection) throws SQLException, ClassNotFoundException{
-        Vector<Carburant> carburants = new Vector<>();
+    public Vector<Transmission> getAll(Connection connection) throws ClassNotFoundException, SQLException{
+        Vector<Transmission> vitesses = new Vector<>();
         boolean wasConnected = true;
 
         if(connection == null) {
@@ -44,15 +44,15 @@ public class Carburant {
             connection = DBConnection.getConnection();
         }
 
-        String sql = "select * from carburant";
+        String sql = "select * from transmission";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql);
             ResultSet resultSet = preparedStatement.executeQuery()) {
             while (resultSet.next()) {
-                Carburant carburant = new Carburant();
-                carburant.setId(resultSet.getInt("id"));
-                carburant.setNom(resultSet.getString("nom"));
-                carburants.add(carburant);
+                Transmission vitesse = new Transmission();
+                vitesse.setId(resultSet.getInt("id"));
+                vitesse.setNom(resultSet.getString("nom"));
+                vitesses.add(vitesse);
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -61,11 +61,11 @@ public class Carburant {
                 connection.close();
             }
         }
-        return carburants;
+        return vitesses;
     }
 
-    public Carburant findById (Connection connection, int id) throws  SQLException,Exception{
-        Carburant model = null;
+    public Transmission findById (Connection connection, int id) throws  SQLException,Exception{
+        Transmission model = null;
         boolean wasConnected = true;
         if(connection == null) {
             wasConnected = false;
@@ -73,17 +73,17 @@ public class Carburant {
         }
 
         try {
-            String sql = "SELECT * FROM carburant WHERE id = ?";
+            String sql = "SELECT * FROM transmission WHERE id = ?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setInt(1, id);
                 ResultSet rs = stmt.executeQuery();
                 if (rs.next()) {
-                    model = new Carburant();
+                    model = new Transmission();
                     model.setId(rs.getInt("id"));
                     model.setNom(rs.getString("nom"));
                     return model;
                 } 
-            } 
+            }
             throw new Exception("Error");
         } catch(Exception ex) {
             throw ex;
@@ -94,17 +94,16 @@ public class Carburant {
         }
     }
 
-    public void saveCarburant(Connection connection) throws SQLException, ClassNotFoundException {
+    public void save(Connection connection) throws SQLException, ClassNotFoundException {
         boolean wasConnected = true;
 
         if(connection == null) {
             wasConnected = false;
             connection = DBConnection.getConnection();
         }
-        String sql = "insert into carburant(id, nom) values(default, ?)";
+        String sql = "insert into transmission(id, nom) values(default, ?)";
 
-        try (PreparedStatement statement = connection.prepareStatement(sql)) 
-        {
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, this.getNom());
             statement.executeUpdate();
         } catch (SQLException throwables) {

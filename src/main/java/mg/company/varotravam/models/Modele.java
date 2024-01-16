@@ -47,7 +47,7 @@ public class Modele {
         this.setNom(nom);
     }
 //--FONCTION
-public void saveModele(Connection connection) throws Exception {
+public void save(Connection connection) throws Exception {
     boolean wasConnected = true;
 
     if (connection == null) {
@@ -64,7 +64,7 @@ public void saveModele(Connection connection) throws Exception {
     } finally {if (!wasConnected) {connection.close();}}
 }
 
-    public Vector<Modele> getAllModele(Connection connection) throws Exception {
+    public Vector<Modele> getAll(Connection connection) throws Exception {
         Vector<Modele> marque = new Vector<>();
         boolean wasConnected = true;
 
@@ -82,7 +82,7 @@ public void saveModele(Connection connection) throws Exception {
                 m.setMarqueId(resultSet.getInt("marque_id"));
                 marque.add(m);
             }
-        } catch (Exception e) {e.printStackTrace();
+        } catch (Exception e) {throw e;
         } finally {if (!wasConnected) {connection.close();}}
         return marque;
     }
@@ -102,14 +102,14 @@ public void saveModele(Connection connection) throws Exception {
                 m = new Modele();
                 m.setId(rs.getInt("id"));
                 m.setNom(rs.getString("nom"));
-                m.setMarqueId(rs.getInt("marqueId"));
+                m.setMarqueId(rs.getInt("marque_id"));
             }
             return m;
         } catch (Exception e) {e.printStackTrace();
         } finally {if (!wasConnected) {connection.close();}}
         return m;
     }
-    public  void updateModele(Connection connection,  int id,String nomM,int marqueIdM)throws Exception{
+    public  void update(Connection connection,  int id,String nomM,int marqueIdM)throws Exception{
         boolean wasConnected = true;
         try{
             if (connection == null) {
@@ -117,7 +117,7 @@ public void saveModele(Connection connection) throws Exception {
                 connection = DBConnection.getConnection();
             }
             Statement stmt = connection.createStatement();
-            String sql = "UPDATE modele set  nom ='"+nomM+"' and marque_id ="+marqueIdM+"  where  id ="+id;
+            String sql = "UPDATE modele set nom ='"+nomM+"' and marque_id ="+marqueIdM+"  where  id ="+id;
             System.out.println(sql);
             stmt.executeUpdate(sql);
         } catch (Exception e) {e.printStackTrace();

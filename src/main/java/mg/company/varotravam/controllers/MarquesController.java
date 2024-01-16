@@ -23,9 +23,9 @@ public class MarquesController extends MonController {
      * @return
      */
     @GetMapping
-    public ResponseEntity<Bag> recupererTout(HttpServletRequest request) {
+    public ResponseEntity<Bag> getAll(HttpServletRequest request) {
         try {
-            bag.setData(new Marque().getAllMarque(null));
+            bag.setData(new Marque().getAll(null));
         } catch (Exception e) {
             bag.setError(e.getMessage());
             return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -39,9 +39,9 @@ public class MarquesController extends MonController {
      * @return
      */
     @PostMapping
-    public ResponseEntity<Bag> ajouter(@RequestBody Marque marque, HttpServletRequest request) {
+    public ResponseEntity<Bag> add(@RequestBody Marque marque, HttpServletRequest request) {
         try {
-            marque.saveMarque(null);
+            marque.save(null);
         } catch (Exception e) {
             return new ResponseEntity<Bag>(bag, null);
         }
