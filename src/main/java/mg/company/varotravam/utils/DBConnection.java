@@ -17,15 +17,19 @@ import java.util.Properties;
  * @author tiavi
  */
 public class DBConnection {
-    private String URL = "jdbc:postgresql://localhost:5432/varotravam";
-    private String USER = "varotravam";
-    private String PASSWORD = "varotravam";
+    
+    private String URL = "jdbc:postgresql://viaduct.proxy.rlwy.net:48600/railway";
+    private String USER = "postgres";
+    private String PASSWORD = "b316E33fAdE-5BCgE3b-aa1Ec*4FcDbd";
+    // private String URL = "jdbc:postgresql://localhost:5432/varotravamv2";
+    // private String USER = "varotravam";
+    // private String PASSWORD = "varotravam";
     private String DRIVER = "org.postgresql.Driver";
     private Connection connection = null;
     
     
     
-    private DBConnection(String propertiesFile) throws ClassNotFoundException, SQLException {
+    private DBConnection(String propertiesFile) throws SQLException {
 //        Properties properties = new Properties();
 //        try (FileInputStream input = new FileInputStream(propertiesFile)) {
 //            properties.load(input);
@@ -39,20 +43,21 @@ public class DBConnection {
     }
     
     
-    private void setting() throws ClassNotFoundException, SQLException {
+    private void setting() throws SQLException {
         try {
             Class.forName(DRIVER);
             connection = DriverManager.getConnection(URL, USER, PASSWORD);
         } catch (ClassNotFoundException e) {
             System.err.println("Le pilote PostgreSQL n'a pas été trouvé.");
-            throw e;
         } catch (SQLException e) {
             System.err.println("Erreur lors de la connexion à la base de données PostgreSQL.");
             throw e;
+        } catch (Exception e) {
+            System.err.println("CONNECTION_ERROR");
         }
     }
     
-    public static Connection getConnection() throws ClassNotFoundException, SQLException {
+    public static Connection getConnection() throws SQLException {
         DBConnection conn = new DBConnection("application.properties");
         return conn.connection;
     }
