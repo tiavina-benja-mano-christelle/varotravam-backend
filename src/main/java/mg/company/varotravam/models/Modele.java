@@ -68,7 +68,7 @@ public class Modele {
     }
 
     //--FONCTION
-public void saveModele(Connection connection, String nom,int marque_id) throws Exception {
+public void save(Connection connection, String nom,int marque_id) throws Exception {
     boolean wasConnected = true;
 
     if (connection == null) {
@@ -85,7 +85,7 @@ public void saveModele(Connection connection, String nom,int marque_id) throws E
     } finally {if (!wasConnected) {connection.close();}}
 }
 
-    public Vector<Modele> getAllModele(Connection connection) throws Exception {
+    public Vector<Modele> getAll(Connection connection) throws Exception {
         Vector<Modele> modele = new Vector<>();
         boolean wasConnected = true;
 
@@ -130,7 +130,7 @@ public void saveModele(Connection connection, String nom,int marque_id) throws E
         } finally {if (!wasConnected) {connection.close();}}
         return m;
     }
-    public  void updateModele(Connection connection,  int id,String nomM,int marque_idM)throws Exception{
+    public  void update(Connection connection,  int id,String nomM,int marque_idM)throws Exception{
         boolean wasConnected = true;
         try{
             if (connection == null) {
