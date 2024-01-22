@@ -187,12 +187,4 @@ public class AnnoncesController extends MonController {
         }
         return new ResponseEntity<Bag>(HttpStatus.OK);
     }
-    
-    
-
-    
-
-
-    
-
 }
