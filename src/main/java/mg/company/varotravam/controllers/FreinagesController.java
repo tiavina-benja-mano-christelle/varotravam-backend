@@ -3,8 +3,7 @@ package mg.company.varotravam.controllers;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.servlet.http.HttpServletRequest;
-import mg.company.varotravam.models.Categorie;
+import mg.company.varotravam.models.Freinage;
 import mg.company.varotravam.utils.Bag;
 
 import java.sql.SQLException;
@@ -18,35 +17,27 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
-@RequestMapping("/api/v1/categories")
-public class CategoriesController extends MonController{
+@RequestMapping("/api/v1/freinages")
+public class FreinagesController extends MonController {
     
-    /**
-     * Récupère tous les categories de véhicules
-     * @return
-     */
-    @GetMapping
-    public ResponseEntity<Bag> getAll(HttpServletRequest request) {
+    @GetMapping("")
+    public ResponseEntity<Bag> recupererTout() {
         try {
-            bag.setData(new Categorie().getAll(null));
-        } catch (ClassNotFoundException | SQLException e) {
+            bag.setData(new Freinage().getAll(null));
+        } catch (SQLException | ClassNotFoundException e) {
             bag.setError(e.getMessage());
             return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<Bag>(bag, HttpStatus.OK);
     }
 
-    /**
-     * Ajouter une nouvelle categorie de véhicule
-     * @param categorie
-     * @return
-     */
-    @PostMapping
-    public ResponseEntity<Bag> add(@RequestBody Categorie categorie, HttpServletRequest request) {
+    @PostMapping("")
+    public ResponseEntity<Bag> ajouter(@RequestBody Freinage freinage) {
         try {
-            categorie.save(null);
-        } catch (Exception e) {
-            return new ResponseEntity<Bag>(bag, null);
+            freinage.save(null);
+        } catch (SQLException | ClassNotFoundException e) {
+            bag.setError(e.getMessage());
+            return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<Bag>(bag, HttpStatus.OK);
     }

@@ -46,7 +46,7 @@ public class Marque {
     }
 
 //--FONCTION
-    public void saveMarque(Connection connection) throws Exception {
+    public void save(Connection connection) throws Exception {
         boolean wasConnected = true;
 
         if (connection == null) {
@@ -62,7 +62,7 @@ public class Marque {
         } finally {if (!wasConnected) {connection.close();}}
     }
 
-    public Vector<Marque> getAllMarque(Connection connection) throws Exception {
+    public Vector<Marque> getAll(Connection connection) throws Exception {
         Vector<Marque> marque = new Vector<>();
         boolean wasConnected = true;
 
@@ -105,7 +105,7 @@ public class Marque {
         } finally {if (!wasConnected) {connection.close();}}
         return m;
     }
-    public  void updateMarque(Connection connection,  int id,String nomM)throws Exception{
+    public  void update(Connection connection,  int id,String nomM)throws Exception{
         boolean wasConnected = true;
         try{
             if (connection == null) {

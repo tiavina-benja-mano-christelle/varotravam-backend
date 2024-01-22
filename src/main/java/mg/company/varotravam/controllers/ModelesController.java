@@ -26,7 +26,7 @@ public class ModelesController extends MonController {
     @GetMapping
     public ResponseEntity<Bag> recupererTout(HttpServletRequest request) {
         try {
-            bag.setData(new Modele().getAllModele(null));
+            bag.setData(new Modele().getAll(null));
         } catch (Exception e) {
             bag.setError(e.getMessage());
             return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -39,7 +39,7 @@ public class ModelesController extends MonController {
      * @return
      */
     @GetMapping("/marque/{marqueId}")
-    public ResponseEntity<Bag> recupererTout(HttpServletRequest request,@PathVariable int marqueId) {
+    public ResponseEntity<Bag> recupererTout(HttpServletRequest request, @PathVariable int marqueId) {
         // try {
         //     bag.setData(new Categorie().getAllCategorie(null));
         //     if (1==1) throw new SQLException();
@@ -59,7 +59,7 @@ public class ModelesController extends MonController {
     @PostMapping
     public ResponseEntity<Bag> ajouter(@RequestBody Modele modele, HttpServletRequest request) {
         try {
-            modele.saveModele(null);
+            modele.save(null);
         } catch (Exception e) {
             return new ResponseEntity<Bag>(bag, null);
         }

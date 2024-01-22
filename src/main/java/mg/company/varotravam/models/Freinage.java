@@ -1,46 +1,20 @@
 package mg.company.varotravam.models;
 
-import java.sql.SQLException;
-import java.util.Vector;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Vector;
 
 import mg.company.varotravam.utils.DBConnection;
 
-public class Categorie {
+public class Freinage {
     int id;
     String nom;
 
-    public int getId() {
-        return id;
-    }
-    public void setId(int id) {
-        this.id = id;
-    }
-    public String getNom() {
-        return nom;
-    }
-    public void setNom(String nom) {
-        this.nom = nom;
-    }
 
-    public Categorie(int id, String nom) {
-        this.id = id;
-        this.nom = nom;
-    }
-
-    public Categorie(String nom) {
-        this.nom = nom;
-    }
-
-    public Categorie() {
-    }
-
-    public Vector<Categorie> getAll(Connection connection) throws ClassNotFoundException, SQLException{
-        Vector<Categorie> categories = new Vector<>();
+    public Vector<Freinage> getAll(Connection connection) throws SQLException, ClassNotFoundException{
+        Vector<Freinage> models = new Vector<>();
         boolean wasConnected = true;
 
         if(connection == null) {
@@ -48,15 +22,15 @@ public class Categorie {
             connection = DBConnection.getConnection();
         }
 
-        String sql = "select * from categorie";
+        String sql = "select * from freinage";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql);
             ResultSet resultSet = preparedStatement.executeQuery()) {
             while (resultSet.next()) {
-                Categorie categorie = new Categorie();
-                categorie.setId(resultSet.getInt("id"));
-                categorie.setNom(resultSet.getString("nom"));
-                categories.add(categorie);
+                Freinage model = new Freinage();
+                model.setId(resultSet.getInt("id"));
+                model.setNom(resultSet.getString("nom"));
+                models.add(model);
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -65,11 +39,11 @@ public class Categorie {
                 connection.close();
             }
         }
-        return categories;
+        return models;
     }
 
-    public Categorie findById (Connection connection, int id) throws Exception{
-        Categorie model = null;
+    public Freinage findById (Connection connection, int id) throws  SQLException,Exception{
+        Freinage model = null;
         boolean wasConnected = true;
         if(connection == null) {
             wasConnected = false;
@@ -77,18 +51,18 @@ public class Categorie {
         }
 
         try {
-            String sql = "SELECT * FROM categorie WHERE id = ?";
+            String sql = "SELECT * FROM freinage WHERE id = ?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setInt(1, id);
                 ResultSet rs = stmt.executeQuery();
                 if (rs.next()) {
-                    model = new Categorie();
+                    model = new Freinage();
                     model.setId(rs.getInt("id"));
                     model.setNom(rs.getString("nom"));
                     return model;
                 } 
             } 
-            throw new Exception("Categorie not found");
+            throw new Exception("Freinage not found");
         } catch(Exception ex) {
             throw ex;
         } finally {
@@ -105,10 +79,11 @@ public class Categorie {
             wasConnected = false;
             connection = DBConnection.getConnection();
         }
-        String sql = "insert into categorie(id, nom) values(default, ?)";
+        String sql = "insert into freinage (id, nom) values(default, ?)";
 
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, getNom());
+        try (PreparedStatement statement = connection.prepareStatement(sql)) 
+        {
+            statement.setString(1, this.getNom());
             statement.executeUpdate();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -118,4 +93,21 @@ public class Categorie {
             }
         }
     }
+
+
+
+    public int getId() {
+        return id;
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
+    public String getNom() {
+        return nom;
+    }
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
+
+    
 }

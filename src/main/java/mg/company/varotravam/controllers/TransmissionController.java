@@ -3,7 +3,7 @@ package mg.company.varotravam.controllers;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import mg.company.varotravam.models.BoiteVitesse;
+import mg.company.varotravam.models.Transmission;
 import mg.company.varotravam.utils.Bag;
 
 import java.sql.SQLException;
@@ -18,12 +18,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/api/v1/boite-vitesses")
-public class BoiteVitessesController extends MonController {
+public class TransmissionController extends MonController {
     
     @GetMapping
     public ResponseEntity<Bag> recupererTout() {
         try {
-            bag.setData(new BoiteVitesse().getAllBoiteVitesse(null));
+            bag.setData(new Transmission().getAll(null));
         } catch (ClassNotFoundException | SQLException e) {
             bag.setError(e.getMessage());
             return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -32,9 +32,9 @@ public class BoiteVitessesController extends MonController {
     }
 
     @PostMapping
-    public ResponseEntity<Bag> ajouter(@RequestBody BoiteVitesse boiteVitesse) {
+    public ResponseEntity<Bag> ajouter(@RequestBody Transmission boiteVitesse) {
         try {
-            boiteVitesse.saveBoiteVitesse(null);
+            boiteVitesse.save(null);
         } catch (ClassNotFoundException | SQLException e) {
             bag.setError(e.getMessage());
             return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);

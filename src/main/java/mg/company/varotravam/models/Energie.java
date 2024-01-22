@@ -10,7 +10,7 @@ import java.sql.SQLException;
 
 import mg.company.varotravam.utils.DBConnection;
 
-public class BoiteVitesse {
+public class Energie {
     int id;
     String nom;
 
@@ -27,16 +27,16 @@ public class BoiteVitesse {
         this.nom = nom;
     }
 
-    public BoiteVitesse(int id, String nom) {
+    public Energie(int id, String nom) {
         this.id = id;
         this.nom = nom;
     }
 
-    public BoiteVitesse() {
+    public Energie() {
     }
 
-    public Vector<BoiteVitesse> getAllBoiteVitesse(Connection connection) throws ClassNotFoundException, SQLException{
-        Vector<BoiteVitesse> vitesses = new Vector<>();
+    public Vector<Energie> getAll(Connection connection) throws SQLException, ClassNotFoundException{
+        Vector<Energie> carburants = new Vector<>();
         boolean wasConnected = true;
 
         if(connection == null) {
@@ -44,15 +44,15 @@ public class BoiteVitesse {
             connection = DBConnection.getConnection();
         }
 
-        String sql = "select * from boite_vitesse";
+        String sql = "select * from energie";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql);
             ResultSet resultSet = preparedStatement.executeQuery()) {
             while (resultSet.next()) {
-                BoiteVitesse vitesse = new BoiteVitesse();
-                vitesse.setId(resultSet.getInt("id"));
-                vitesse.setNom(resultSet.getString("nom"));
-                vitesses.add(vitesse);
+                Energie carburant = new Energie();
+                carburant.setId(resultSet.getInt("id"));
+                carburant.setNom(resultSet.getString("nom"));
+                carburants.add(carburant);
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -61,11 +61,11 @@ public class BoiteVitesse {
                 connection.close();
             }
         }
-        return vitesses;
+        return carburants;
     }
 
-    public BoiteVitesse findById (Connection connection, int id) throws  SQLException,Exception{
-        BoiteVitesse model = null;
+    public Energie findById (Connection connection, int id) throws  SQLException,Exception{
+        Energie model = null;
         boolean wasConnected = true;
         if(connection == null) {
             wasConnected = false;
@@ -73,18 +73,18 @@ public class BoiteVitesse {
         }
 
         try {
-            String sql = "SELECT * FROM boite_vitesse WHERE id = ?";
+            String sql = "SELECT * FROM energie WHERE id = ?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setInt(1, id);
                 ResultSet rs = stmt.executeQuery();
                 if (rs.next()) {
-                    model = new BoiteVitesse();
+                    model = new Energie();
                     model.setId(rs.getInt("id"));
                     model.setNom(rs.getString("nom"));
                     return model;
                 } 
-            }
-            throw new Exception("Error");
+            } 
+            throw new Exception("Energie not found");
         } catch(Exception ex) {
             throw ex;
         } finally {
@@ -94,16 +94,17 @@ public class BoiteVitesse {
         }
     }
 
-    public void saveBoiteVitesse(Connection connection) throws SQLException, ClassNotFoundException {
+    public void save(Connection connection) throws SQLException, ClassNotFoundException {
         boolean wasConnected = true;
 
         if(connection == null) {
             wasConnected = false;
             connection = DBConnection.getConnection();
         }
-        String sql = "insert into boite_vitesse(id, nom) values(default, ?)";
+        String sql = "insert into energie(id, nom) values(default, ?)";
 
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (PreparedStatement statement = connection.prepareStatement(sql)) 
+        {
             statement.setString(1, this.getNom());
             statement.executeUpdate();
         } catch (SQLException throwables) {

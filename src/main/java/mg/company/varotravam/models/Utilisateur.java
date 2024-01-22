@@ -3,6 +3,7 @@ package mg.company.varotravam.models;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import mg.company.varotravam.utils.DBConnection;
 
@@ -14,16 +15,78 @@ public class Utilisateur {
     boolean administrateur;
 
     /**
+     * Vérifie si l'identifiant correspond à un utilisateur
+     * @param id
+     * @param connection
+     * @return
+     * @throws Exception
+     */
+    public static Utilisateur verifierUtilisateur(int id, Connection connection) throws Exception {
+        Utilisateur utilisateur = findUserById(id, connection);
+        if (utilisateur.isAdministrateur()) throw new Exception("Utilisateur non reconnue");
+        return utilisateur;
+    }
+
+    /**
+     * Vérifie si l'identifiant correspond à un administrateur
+     * @param id
+     * @param connection
+     * @return
+     * @throws Exception
+     */
+    public static Utilisateur verifierAdministrateur(int id, Connection connection) throws Exception {
+        Utilisateur utilisateur = findUserById(id, connection);
+        if (!utilisateur.isAdministrateur()) throw new Exception("Administrateur non reconnue");
+        return utilisateur;
+    }
+
+    /**
      * Récupère l'utilisateur par son identifiant
      * @param id
      * @param connection
      * @return
+     * @throws SQLException
      */
-    public static Utilisateur chercherParId(int id, Connection connection) {
-        //TODO: implementer la recherche d'utilisateur par ID
+    public static Utilisateur findUserById(int id, Connection connection) throws Exception {
+        Utilisateur model = null;
+        boolean wasConnected = true;
+        if(connection == null) {
+            wasConnected = false;
+            connection = DBConnection.getConnection();
+        }
+        try {
+            String sql = "SELECT * FROM v_utilisateur_client WHERE id=?";
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+                stmt.setInt(1, id);
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    model = new Utilisateur();
+                    model.setId(rs.getInt("id"));
+                    model.setNom(rs.getString("nom"));
+                    model.setEmail(rs.getString("email"));
+                    model.setMotDePasse(rs.getString("mot_de_passe"));
+                    model.setAdministrateur(rs.getBoolean("administrateur"));
+                } else {
+                    throw new Exception("Utilisateur inconnue");
+                }
+            } 
+        } catch(Exception ex) {
+            throw ex;
+        } finally {
+            if (!wasConnected) {
+                connection.close();
+            }
+        }
         return new Utilisateur();
     }
 
+    /**
+     * Vérifie si le nom et le mot de passe envoyé est administrateur
+     * @param nom
+     * @param password
+     * @return
+     * @throws Exception
+     */
     public static Utilisateur verifierAdministrateur(String nom, String password) throws Exception {
         try {
             Utilisateur utilisateur = chercherAdministrateurParNomOuEmail(nom, null);
@@ -34,6 +97,13 @@ public class Utilisateur {
         }
     }
 
+    /**
+     * Vérifie si le nom et le mot de passe correspond à un utilisateur
+     * @param nom
+     * @param password
+     * @return
+     * @throws Exception
+     */
     public static Utilisateur verifierUtilisateur(String nom, String password) throws Exception {
         try {
             Utilisateur utilisateur = chercherUtilisateurParNomOuEmail(nom, null);

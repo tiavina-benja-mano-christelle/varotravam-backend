@@ -1,234 +1,220 @@
 package mg.company.varotravam.models;
 
-import mg.company.varotravam.utils.DBConnection;
-import java.sql.Connection;
 import java.sql.Date;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
+
+import mg.company.varotravam.utils.DBConnection;
 
 public class Annonce {
     int id;
-    int modele_id;
-    int energie_id;
-    int vitesse_id;
-    int annee;
-    int kilometrage;
-    double prix_initial;
+    double prixInitial;
+    Date datePublication;
+    Date dateFermeture;
+    String description;
+    int vehiculeId;
+    int utilisateurId;
     int etat;
-    int categorie_id;
-    Date date_publication;
-    Date date_fermeture;
+    Vehicule vehicule;
+
+    /**
+     * Ajoute l'annonce au favori de l'utilisateur
+     * @param utilisateurId l'identifiant de l'utilisateur qui met en favori
+     * @param annonceId l'identifiant de l'annonce a mettre en favorie
+     * @param connection
+     */
+    public static void addToFavorite(int utilisateurId, int annonceId, Connection connection) {
+        //TODO: ajouter dans les favories
+    }
+
+    /**
+     * Recherche les annonces en attente de validation
+     * @param connection
+     * @return
+     * @throws Exception
+     */
+    public List<Annonce> findWaiting(Connection connection) throws Exception {
+        //TODO: rechercher les annonces en attente de validation
+        return new ArrayList<>();
+    }
+
+    /**
+     * Recherche les annonces disponibles en ce moment
+     * @param connection
+     * @return
+     * @throws Exception
+     */
+    public List<Annonce> findDispo(Connection connection) throws Exception {
+        List<Annonce> models = new ArrayList<>();
+        boolean wasConnected = true;
+        
+        if(connection == null) {
+            wasConnected = false;
+            connection = DBConnection.getConnection();
+        }
+        
+        String sql = "SELECT * FROM v_annonce_dispo_detailled";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            ResultSet rs = preparedStatement.executeQuery()) {
+                while (rs.next()) {
+                    Annonce model = new Annonce();
+                    model.setId(rs.getInt("annonce_id"));
+                    model.setPrixInitial(rs.getDouble("prix_initial"));
+                    model.setDatePublication(rs.getDate("date_publication"));
+                    model.setDateFermeture(rs.getDate("date_fermeture"));
+                    model.setDescription(rs.getString("description"));
+                    model.setVehiculeId(rs.getInt("vehicule_id"));
+                    model.setEtat(rs.getInt("etat_annonce"));
+                    model.setVehicule(Vehicule.resultSetToVehicule(rs));
+                    models.add(model);
+                }   
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            if (!wasConnected) {
+                connection.close();
+            }
+        }
+        return models;
+    }
+
+    /**
+     * Recherche les annonces favorites de l'utilisateur
+     * @param connection
+     * @param utilisateurId l'utilisateur en question
+     * @return
+     * @throws Exception
+     */
+    public List<Annonce> findFavori(int utilisateurId, Connection connection) throws Exception {
+        List<Annonce> models = new ArrayList<>();
+        boolean wasConnected = true;
+        
+        if(connection == null) {
+            wasConnected = false;
+            connection = DBConnection.getConnection();
+        }
+        
+        String sql = "SELECT * FROM v_annonce_favorites WHERE utilisateur_favori_id=?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, utilisateurId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Annonce model = new Annonce();
+                model.setId(rs.getInt("annonce_id"));
+                model.setPrixInitial(rs.getDouble("prix_initial"));
+                model.setDatePublication(rs.getDate("date_publication"));
+                model.setDateFermeture(rs.getDate("date_fermeture"));
+                model.setDescription(rs.getString("description"));
+                model.setVehiculeId(rs.getInt("vehicule_id"));
+                model.setEtat(rs.getInt("etat_annonce"));
+                model.setVehicule(Vehicule.resultSetToVehicule(rs));
+                models.add(model);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            if (!wasConnected) {
+                connection.close();
+            }
+        }
+        return models;
+    }
+
+    /**
+     * Enregistre l'annonce avec l'etat par défaut
+     * @param connection
+     * @throws Exception
+     */
+    public void save(Connection connection) throws Exception {
+        boolean wasConnected = true;
+        if(connection == null) {
+            wasConnected = false;
+            connection = DBConnection.getConnection();
+        }
+        String sql = "INSERT INTO \"public\".annonce ( id, prix_initial, date_publication, date_fermeture, description, vehicule_id, utilisateur_id, etat) VALUES ( default, ?, ?, ?, ?, ?, ?, default ) RETURNING id";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) 
+        {
+            stmt.setDouble(1, getPrixInitial());
+            stmt.setDate(2, getDatePublication());
+            stmt.setDate(3, getDateFermeture());
+            stmt.setString(4, getDescription());
+            stmt.setInt(5, getVehiculeId());
+            stmt.setInt(6, getUtilisateurId());
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                setId(rs.getInt("id"));
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            if (!wasConnected) {
+                connection.close();
+            }
+        }
+    }
 
     public int getId() {
         return id;
     }
-
     public void setId(int id) {
         this.id = id;
     }
-
-    public int getModele_id() {
-        return modele_id;
+    public double getPrixInitial() {
+        return prixInitial;
     }
-
-    public void setModele_id(int modele_id) {
-        this.modele_id = modele_id;
+    public void setPrixInitial(double prixInitial) {
+        this.prixInitial = prixInitial;
     }
-
-    public int getEnergie_id() {
-        return energie_id;
+    public Date getDatePublication() {
+        return datePublication;
     }
-
-    public void setEnergie_id(int energie_id) {
-        this.energie_id = energie_id;
+    public void setDatePublication(Date datePublication) {
+        this.datePublication = datePublication;
     }
-
-    public int getVitesse_id() {
-        return vitesse_id;
+    public Date getDateFermeture() {
+        return dateFermeture;
     }
-
-    public void setVitesse_id(int vitesse_id) {
-        this.vitesse_id = vitesse_id;
+    public void setDateFermeture(Date dateFermeture) {
+        this.dateFermeture = dateFermeture;
     }
-
-    public int getAnnee() {
-        return annee;
+    public String getDescription() {
+        return description;
     }
-
-    public void setAnnee(int annee) {
-        this.annee = annee;
+    public void setDescription(String description) {
+        this.description = description;
     }
-
-    public int getKilometrage() {
-        return kilometrage;
+    public int getVehiculeId() {
+        return vehiculeId;
     }
-
-    public void setKilometrage(int kilometrage) {
-        this.kilometrage = kilometrage;
+    public void setVehiculeId(int vehiculeId) {
+        this.vehiculeId = vehiculeId;
     }
-
-    public double getPrix_initial() {
-        return prix_initial;
+    public int getUtilisateurId() {
+        return utilisateurId;
     }
-
-    public void setPrix_initial(double prix_initial) {
-        this.prix_initial = prix_initial;
+    public void setUtilisateurId(int utilisateurId) {
+        this.utilisateurId = utilisateurId;
     }
-
     public int getEtat() {
         return etat;
     }
-
     public void setEtat(int etat) {
         this.etat = etat;
     }
 
-    public int getCategorie_id() {
-        return categorie_id;
+    public Vehicule getVehicule() {
+        return vehicule;
     }
 
-    public void setCategorie_id(int categorie_id) {
-        this.categorie_id = categorie_id;
+    public void setVehicule(Vehicule vehicule) {
+        this.vehicule = vehicule;
     }
 
-    public Date getDate_publication() {
-        return date_publication;
-    }
-
-    public void setDate_publication(Date date_publication) {
-        this.date_publication = date_publication;
-    }
-
-    public Date getDate_fermeture() {
-        return date_fermeture;
-    }
-
-    public void setDate_fermeture(Date date_fermeture) {
-        this.date_fermeture = date_fermeture;
-    }
-
-    public Annonce(int id, int modele_id, int energie_id, int vitesse_id, int annee, int kilometrage, double prix_initial, int etat, int categorie_id, Date date_publication, Date date_fermeture) {
-        this.id = id;
-        this.modele_id = modele_id;
-        this.energie_id = energie_id;
-        this.vitesse_id = vitesse_id;
-        this.annee = annee;
-        this.kilometrage = kilometrage;
-        this.prix_initial = prix_initial;
-        this.etat = etat;
-        this.categorie_id = categorie_id;
-        this.date_publication = date_publication;
-        this.date_fermeture = date_fermeture;
-    }
-
-    public Annonce() {
-    }
-
-    public Vector<Annonce> getAllBoiteVitesse(Connection connection) throws ClassNotFoundException, SQLException{
-        Vector<Annonce> annonces = new Vector<>();
-        boolean wasConnected = true;
-
-        if(connection == null) {
-            wasConnected = false;
-            connection = DBConnection.getConnection();
-        }
-
-        String sql = "select * from annonce";
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            ResultSet resultSet = preparedStatement.executeQuery()) {
-            while (resultSet.next()) {
-                Annonce annonce = new Annonce();
-                annonce.setId(resultSet.getInt("id"));
-                annonce.setModele_id(resultSet.getInt("modele_id"));                
-                annonce.setEnergie_id(resultSet.getInt("energie_id"));
-                annonce.setVitesse_id(resultSet.getInt("vitesse_id"));
-                annonce.setAnnee(resultSet.getInt("annee"));
-                annonce.setKilometrage(resultSet.getInt("kilometrage"));
-                annonce.setPrix_initial(resultSet.getDouble("prix_initial"));
-                annonce.setEtat(resultSet.getInt("etat"));    
-                annonce.setCategorie_id(resultSet.getInt("categorie_id"));
-                annonce.setDate_publication(resultSet.getDate("date_publication"));
-                annonce.setDate_fermeture(resultSet.getDate("date_fermeture"));
-                annonces.add(annonce);
-            }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        } finally {
-            if (!wasConnected) {
-                connection.close();
-            }
-        }
-        return annonces;
-    }
     
-    public Annonce findById (Connection connection) throws Exception{
-        Annonce model = null;
-        boolean wasConnected = true;
-        if(connection == null) {
-            wasConnected = false;
-            connection = DBConnection.getConnection();
-        }
-
-        try {
-            String sql = "SELECT * FROM annonce WHERE id = ?";
-            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-                stmt.setInt(1, this.getId());
-                ResultSet rs = stmt.executeQuery();
-                if (rs.next()) {
-                    model = new Annonce();
-                    model.setId(rs.getInt("id"));
-                    model.setModele_id(rs.getInt("modele_id"));                
-                    model.setEnergie_id(rs.getInt("energie_id"));
-                    model.setVitesse_id(rs.getInt("vitesse_id"));
-                    model.setAnnee(rs.getInt("annee"));
-                    model.setKilometrage(rs.getInt("kilometrage"));
-                    model.setPrix_initial(rs.getDouble("prix_initial"));
-                    model.setEtat(rs.getInt("etat"));    
-                    model.setCategorie_id(rs.getInt("categorie_id"));
-                    model.setDate_publication(rs.getDate("date_publication"));
-                    model.setDate_fermeture(rs.getDate("date_fermeture"));
-                    return model;
-                } 
-            }
-            throw new Exception("Error");
-        } catch(Exception ex) {
-            throw ex;
-        } finally {
-            if (!wasConnected) {
-                connection.close();
-            }
-        }
-    }
-
-    public void saveAnnonce(Connection connection) throws SQLException, ClassNotFoundException {
-        boolean wasConnected = true;
-
-        if(connection == null) {
-            wasConnected = false;
-            connection = DBConnection.getConnection();
-        }
-        String sql = "insert into annonce(id, modele_id, energie_id, vitesse_id, annee, kilometrage, prix_initial, categorie_id, date_publication, date_fermeture) values(default, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setInt(1, this.getModele_id());            
-            statement.setInt(2, this.getEnergie_id());
-            statement.setInt(3, this.getVitesse_id());
-            statement.setInt(4, this.getAnnee());
-            statement.setInt(5, this.getKilometrage());
-            statement.setDouble(6, this.getPrix_initial());
-            statement.setInt(7, this.getCategorie_id());
-            statement.setDate(8, this.getDate_publication());
-            statement.setDate(9, this.getDate_fermeture());
-            statement.executeUpdate();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        } finally {
-            if (!wasConnected) {
-                connection.close();
-            }
-        }
-    }
 }
