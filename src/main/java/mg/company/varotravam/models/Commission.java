@@ -97,10 +97,10 @@ public class Commission {
                 c.setCommission_date(rs.getDate("commission_date "));
                 c.setValeur(rs.getDouble("valeur"));
             }
-            return m;
+            return c;
         } catch (Exception e) {e.printStackTrace();
         } finally {if (!wasConnected) {connection.close();}}
-        return m;
+        return c;
     }
     public  void update(Connection connection,  int id,Date commission_date,double valeur)throws Exception{
         boolean wasConnected = true;
@@ -117,7 +117,7 @@ public class Commission {
         } finally {if (!wasConnected) {connection.close();}}
     }
     //Commission Actuelle
-    public void getCurrentCommission() throws Exception {
+    public Commission getCurrentCommission(Connection connection) throws Exception {
             Commission c = null;
             boolean wasConnected = true;
             if (connection == null) {
@@ -134,10 +134,10 @@ public class Commission {
                     c.setCommission_date(rs.getDate("commission_date "));
                     c.setValeur(rs.getDouble("valeur"));
                 }
-                return m;
+                return c;
             } catch (Exception e) {e.printStackTrace();
             } finally {if (!wasConnected) {connection.close();}}
-            return m;
+            return c;
     }
     public Vector<Commission> getCommissionByDesc(Connection connection) throws Exception {
         Vector<Commission> commission = new Vector<>();
@@ -162,7 +162,7 @@ public class Commission {
         } finally {if (!wasConnected) {connection.close();}}
         return commission;
     }
-    public Commission findByDate(Connection connection, int id) throws Exception {
+    public Commission findByDate(Connection connection, Date t) throws Exception {
         Commission c = null;
         boolean wasConnected = true;
         if (connection == null) {
@@ -171,7 +171,7 @@ public class Commission {
         }
         String sql = "SELECT * FROM commission WHERE commission_date = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, id);
+            stmt.setDate(1, t);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 c = new Commission();
@@ -179,9 +179,9 @@ public class Commission {
                 c.setCommission_date(rs.getDate("commission_date "));
                 c.setValeur(rs.getDouble("valeur"));
             }
-            return m;
+            return c;
         } catch (Exception e) {e.printStackTrace();
         } finally {if (!wasConnected) {connection.close();}}
-        return m;
+        return c;
     }
 }
