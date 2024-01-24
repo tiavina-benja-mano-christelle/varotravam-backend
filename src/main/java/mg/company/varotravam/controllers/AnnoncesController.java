@@ -1,73 +1,134 @@
 package mg.company.varotravam.controllers;
 
+import jakarta.servlet.http.HttpServletRequest;
+
+import java.sql.Connection;
+import java.util.List;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-
-import jakarta.servlet.http.HttpServletRequest;
-import mg.company.varotravam.models.Annonce;
-import mg.company.varotravam.models.Favori;
-import mg.company.varotravam.models.Test;
-import mg.company.varotravam.models.Utilisateur;
-import mg.company.varotravam.services.FirebaseStorageService;
-import mg.company.varotravam.utils.Bag;
-import mg.company.varotravam.utils.JWTtokens;
-
-import java.io.IOException;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+
+import mg.company.varotravam.exceptions.NotAuthorizedException;
+import mg.company.varotravam.models.Annonce;
+import mg.company.varotravam.models.Favori;
+import mg.company.varotravam.utils.Bag;
+import mg.company.varotravam.utils.DBConnection;
+import mg.company.varotravam.utils.JWTtokens;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-
-/* IMPORT */
-import com.google.cloud.storage.Blob;
-import com.google.cloud.storage.BlobId;
-import com.google.cloud.storage.BlobInfo;
-import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageOptions;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.List;
-
-/* END */
 
 
 
-@RequestMapping("/api/v1/annonces")
+
 @RestController
-public class AnnoncesController extends MonController {
+@RequestMapping("/api/v1/annonces")
+public class AnnoncesController {
 
-    @Value("${firebase.storage.bucket}")
-    private String bucketName;
+    @GetMapping("/en-attente")
+    public ResponseEntity<Bag> enAttente(HttpServletRequest request) {
+        Bag bag = new Bag();
+        try {
+            JWTtokens.checkWithRole(request, "admin");
+            List<Annonce> annonces = new Annonce().findWaiting(null);
+            bag.setData(annonces); 
+        } catch (NotAuthorizedException e) {
+            return new ResponseEntity<Bag>(HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
+            bag.setError(e.getMessage());
+            return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(bag, HttpStatus.OK);
+    }
     
+     
+    /**
+     * Refuse de l'annonce
+     * @param annonce
+     * @param request
+     * @return
+     */
+    @PutMapping("/refuse")
+    public ResponseEntity<Bag> refuse(@RequestBody Annonce annonce, HttpServletRequest request) {
+        Bag bag = new Bag();
+        try {
+            JWTtokens.checkWithRole(request, "admin");
+            annonce.refuse(null);
+        } catch (NotAuthorizedException e) {
+            return new ResponseEntity<Bag>(HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
+            bag.setError(e.getMessage());
+            return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
     /**
-     * APK TESTING MULTIPART-FILE
+     * Valide de l'annonce
+     * @param annonce
+     * @param request
+     * @return
      */
-    @PostMapping("/test")
-    public ResponseEntity<Bag> test(Test test) {
+    @PutMapping("/validate")
+    public ResponseEntity<Bag> validate(@RequestBody Annonce annonce, HttpServletRequest request) {
+        Bag bag = new Bag();
         try {
-            new FirebaseStorageService(null).envoyerImageVersFirebaseStorage(test.getFileValue(), "", "");
-        } catch (IOException e) {
-            e.printStackTrace();
+            JWTtokens.checkWithRole(request, "admin");
+            annonce.validate(null);
+        } catch (NotAuthorizedException e) {
+            return new ResponseEntity<Bag>(bag, HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
+            bag.setError(e.getMessage());
+            return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
+    /**
+     * Change le status de l'annonce
+     * @param annonce
+     * @param request
+     * @return
+     */
+    @PutMapping
+    public ResponseEntity<Bag> changeStatus(@RequestBody Annonce annonce, HttpServletRequest request) {
+        Bag bag = new Bag();
+        try {
+            JWTtokens.checkWithRole(request, "user");
+            annonce.changeStatus(null);
+        } catch (NotAuthorizedException e) {
+            return new ResponseEntity<Bag>(bag, HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
+            bag.setError(e.getMessage());
+            return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * Listes des annonces envoyées par l'utilisateur connecté
+     * @param request
+     * @return
+     */
+    @GetMapping("/moi")
+    public ResponseEntity<Bag> mesAnnonces(HttpServletRequest request) {
+        Bag bag = new Bag();
+        try {
+            int utilisateurId = JWTtokens.checkWithRole(request, "user");
+            List<Annonce> mesAnnonces = new Annonce().findSended(utilisateurId, null);
+            bag.setData(mesAnnonces);
+        } catch (NotAuthorizedException e) {
+            return new ResponseEntity<Bag>(HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
+            bag.setError(e.getMessage());
+            return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<Bag>(bag, HttpStatus.OK);
     }
@@ -78,10 +139,19 @@ public class AnnoncesController extends MonController {
      * @param request
      * @return
      */
-    @PostMapping("/creation")
-    public ResponseEntity<Bag> creerAnnonce(@RequestBody Annonce annonce, HttpServletRequest request) {
-        //TODO: vérifier si le token est valide
-        //TODO: implementer la création de l'annonce
+    @PostMapping
+    public ResponseEntity<Bag> create(@RequestBody Annonce annonce, HttpServletRequest request) {
+        Bag bag = new Bag();
+        try {
+            int utilisateurID = JWTtokens.checkWithRole(request, "user");
+            annonce.setUtilisateurId(utilisateurID);
+            annonce.create(null);
+        } catch (NotAuthorizedException e) {
+            return new ResponseEntity<Bag>(bag, HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
+            bag.setError(e.getMessage());
+            return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         return new ResponseEntity<Bag>(bag, HttpStatus.OK);
     }
 
@@ -109,6 +179,7 @@ public class AnnoncesController extends MonController {
      */
     @PostMapping("/filtrer")
     public ResponseEntity<Bag> annonceActifFiltrer() {
+        Bag bag = new Bag();
         //TODO: implementer la récuperation des annonces disponible avec les filtres
         return new ResponseEntity<>(bag, HttpStatus.OK);
     }
@@ -118,9 +189,15 @@ public class AnnoncesController extends MonController {
      * @param annonceId
      * @return
      */
-    @GetMapping("/{annonceId}")
-    public ResponseEntity<Bag> annonceDetail(@PathVariable String annonceId) {
-        //TODO: implementer la récupération de l'annonce
+    @GetMapping("/{id}")
+    public ResponseEntity<Bag> annonceDetail(@PathVariable int id) {
+        Bag bag = new Bag();
+        try {
+            bag.setData(new Annonce().findById(id, null));
+        } catch (Exception e) {
+            bag.setError(e.getMessage());
+            return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         return new ResponseEntity<Bag>(bag, HttpStatus.OK);
     }
     
@@ -133,9 +210,10 @@ public class AnnoncesController extends MonController {
     public ResponseEntity<Bag> annonceFavorites(HttpServletRequest request) {
         Bag bag = new Bag();
         try {
-            String token = request.getHeader("authorization");
-            int subject = JWTtokens.checkBearer(token);
+            int subject = JWTtokens.checkWithRole(request, "user");
             bag.setData(new Annonce().findFavori(subject, null));
+        } catch (NotAuthorizedException e) {
+            return new ResponseEntity<Bag>(HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
             bag.setError(e.getMessage());
             return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -151,13 +229,13 @@ public class AnnoncesController extends MonController {
     @PostMapping("/favorites")
     public ResponseEntity<Bag> ajouterAuxFavori(@RequestBody int idAnnonce, HttpServletRequest request) {
         Bag bag = new Bag();
+        int subject = 0;
         try {
-            String token = request.getHeader("authorization");
-            int subject = JWTtokens.checkBearer(token);
-            Utilisateur utilisateur = new Utilisateur();
-            utilisateur.setId(subject);
-            Favori favori = new Favori(utilisateur.getId(), idAnnonce);
+            subject = JWTtokens.checkWithRole(request, "user");
+            Favori favori = new Favori(subject, idAnnonce);
             favori.save(null);
+        } catch (NotAuthorizedException e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
             bag.setError(e.getMessage());
             return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -166,21 +244,21 @@ public class AnnoncesController extends MonController {
     }
 
     /**
-     * Ajoute l'annonce en favori de l'utilisateur
+     * Enlever l'annonce en favori de l'utilisateur
      * @param annonce
      * @return
      */
     @DeleteMapping("/favorites")
     public ResponseEntity<Bag> enleverDesFavori(@RequestBody int idAnnonce, HttpServletRequest request) {
         Bag bag = new Bag();
+        int subject = 0;
         try {
-            String token = request.getHeader("authorization");
-            int subject = JWTtokens.checkBearer(token);
-            Utilisateur utilisateur = new Utilisateur();
-            utilisateur.setId(subject);
-            Favori favori = new Favori(utilisateur.getId(), idAnnonce);
-            favori.find(null);
-            favori.delete(null);
+            subject = JWTtokens.checkWithRole(request, "user");
+            Favori favori = new Favori(subject, idAnnonce);
+            Connection connection = DBConnection.getConnection();
+            favori.find(connection);
+            favori.delete(connection);
+            connection.close();
         } catch (Exception e) {
             bag.setError(e.getMessage());
             return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);

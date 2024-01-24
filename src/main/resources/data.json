@@ -1,0 +1,22 @@
+
+
+{
+    "prixInitial": 6000000,
+    "description": "Voitures spacieuces",
+    "vehicule": {
+        "kilometrage":15000,
+        "puissance": 150,
+        "place": 5,
+        "porte": 5,
+        "consommation": 6.5,
+        "etat": 8,
+        "transmissionId": 2,
+        "energieId": 2,
+        "categorieId": 2,
+        "modeleId": 3,
+        "freinageId": 4,
+        "couleurId": 7,
+        "images": [],
+        "equipementsId": [1,5,9,10] 
+    }
+}

@@ -1,7 +1,5 @@
 package mg.company.varotravam.controllers;
 
-import java.sql.SQLException;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,8 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletRequest;
+import mg.company.varotravam.exceptions.NotAuthorizedException;
 import mg.company.varotravam.models.Modele;
 import mg.company.varotravam.utils.Bag;
+import mg.company.varotravam.utils.JWTtokens;
 
 @RestController
 @RequestMapping("/api/v1/modeles")
@@ -24,7 +24,7 @@ public class ModelesController extends MonController {
      * @return
      */
     @GetMapping
-    public ResponseEntity<Bag> recupererTout(HttpServletRequest request) {
+    public ResponseEntity<Bag> getAll() {
         try {
             bag.setData(new Modele().getAll(null));
         } catch (Exception e) {
@@ -39,7 +39,7 @@ public class ModelesController extends MonController {
      * @return
      */
     @GetMapping("/marque/{marqueId}")
-    public ResponseEntity<Bag> recupererTout(HttpServletRequest request, @PathVariable int marqueId) {
+    public ResponseEntity<Bag> get(HttpServletRequest request, @PathVariable int marqueId) {
         // try {
         //     bag.setData(new Categorie().getAllCategorie(null));
         //     if (1==1) throw new SQLException();
@@ -57,13 +57,16 @@ public class ModelesController extends MonController {
      * @return
      */
     @PostMapping
-    public ResponseEntity<Bag> ajouter(@RequestBody Modele modele, HttpServletRequest request) {
+    public ResponseEntity<Bag> add(@RequestBody Modele modele, HttpServletRequest request) {
         try {
+            JWTtokens.checkWithRole(request, "admin");
             modele.save(null);
+        } catch (NotAuthorizedException e) {
+            return new ResponseEntity<Bag>(HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
-            return new ResponseEntity<Bag>(bag, null);
+            return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<Bag>(bag, HttpStatus.OK);
+        return new ResponseEntity<Bag>(HttpStatus.OK);
     }
     
 }

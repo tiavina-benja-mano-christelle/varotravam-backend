@@ -14,6 +14,44 @@ public class Utilisateur {
     String motDePasse;
     boolean administrateur;
 
+    public static Utilisateur resultSetToUtilisateur(ResultSet rs) throws SQLException {
+        Utilisateur utilisateur = new Utilisateur();
+        utilisateur.setNom(rs.getString("utilisateur_nom"));
+        utilisateur.setEmail(rs.getString("utilisateur_email"));
+        utilisateur.setMotDePasse(rs.getString("mot_de_passe"));
+        return utilisateur;
+    }
+
+    /**
+     * DAO: sauvegarde l'utilisateur
+     * @param connection
+     */
+    public void save(Connection connection) throws SQLException {
+        boolean wasConnected = true;
+
+        if(connection == null) {
+            wasConnected = false;
+            connection = DBConnection.getConnection();
+        }
+        String sql = "INSERT INTO utilisateur (id, nom, email, mot_de_passe, administrateur) VALUES (default, ?, ?, ?, default) RETURNING id";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) 
+        {
+            stmt.setString(1, this.getNom());
+            stmt.setString(2, this.getEmail());
+            stmt.setString(3, this.getMotDePasse());
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                this.setId(rs.getInt("id"));
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            if (!wasConnected) {
+                connection.close();
+            }
+        }
+    }
+
     /**
      * Vérifie si l'identifiant correspond à un utilisateur
      * @param id

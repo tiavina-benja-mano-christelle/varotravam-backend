@@ -10,7 +10,7 @@ import java.util.Vector;
 
 public class Modele {
     int id,marqueId;
-    String nom;
+    String nom, marque;
 //--GETTERS && SETTERS
     public int getId() {
         return id;
@@ -72,7 +72,7 @@ public void save(Connection connection) throws Exception {
             wasConnected = false;
             connection = DBConnection.getConnection();
         }
-        String sql = "select * from modele";
+        String sql = "select * from v_modele ORDER BY nom";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql);
              ResultSet resultSet = preparedStatement.executeQuery()) {
             while (resultSet.next()) {
@@ -80,6 +80,7 @@ public void save(Connection connection) throws Exception {
                 m.setId(resultSet.getInt("id"));
                 m.setNom(resultSet.getString("nom"));
                 m.setMarqueId(resultSet.getInt("marque_id"));
+                m.setMarque(resultSet.getString("marque"));
                 marque.add(m);
             }
         } catch (Exception e) {throw e;
@@ -94,7 +95,7 @@ public void save(Connection connection) throws Exception {
             wasConnected = false;
             connection = DBConnection.getConnection();
         }
-        String sql = "SELECT * FROM modele WHERE id = ?";
+        String sql = "SELECT * FROM v_modele WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
@@ -103,6 +104,7 @@ public void save(Connection connection) throws Exception {
                 m.setId(rs.getInt("id"));
                 m.setNom(rs.getString("nom"));
                 m.setMarqueId(rs.getInt("marque_id"));
+                m.setMarque(rs.getString("marque"));
             }
             return m;
         } catch (Exception e) {e.printStackTrace();
@@ -124,4 +126,14 @@ public void save(Connection connection) throws Exception {
         } finally {if (!wasConnected) {connection.close();}}
     }
 
+    public String getMarque() {
+        return marque;
+    }
+
+    public void setMarque(String marque) {
+        this.marque = marque;
+    }
+
+
+    
 }
