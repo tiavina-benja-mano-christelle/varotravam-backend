@@ -160,6 +160,33 @@ public class Annonce {
             }
         }
     }
+    //ttl actif
+    public int countActif(Connection connection,int etat) throws Exception {
+        int c = 0;
+        boolean wasConnected = true;
+
+        if(connection == null) {
+            wasConnected = false;
+            connection = DBConnection.getConnection();
+        }
+
+        String sql = "select count(id) as nombre_annonces from annonce where etat =?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, etat);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                c = rs.getInt("nombre_annonces");
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            if (!wasConnected) {
+                connection.close();
+            }
+        }
+        return c;
+    }
+
     //GRAPHE
     //par mois ,annee actuel
     //mois

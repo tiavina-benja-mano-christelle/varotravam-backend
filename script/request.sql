@@ -1,6 +1,6 @@
 
 --Nombre d'annonce active
-select count(id) from annonce where etat = 5;
+select count(id) from annonce where etat = 10;
 
 
 --Nombre de nouvelle annonce par mois, par ans(graphe)
