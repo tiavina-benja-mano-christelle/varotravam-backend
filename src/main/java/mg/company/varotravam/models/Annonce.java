@@ -11,8 +11,8 @@ import java.util.List;
 import mg.company.varotravam.utils.DBConnection;
 
 public class Annonce {
-    private final static int INDISPONIBLE = 10;
-    private final static int SELLED = 10;
+    private final static int INDISPONIBLE = 15;
+    private final static int SELLED = 20;
     private final static int DISPONIBLE = 10;
     private final static int WAITING = 5;
     private final static int REFUSED = 1;
@@ -29,6 +29,18 @@ public class Annonce {
     Vehicule vehicule;
     Utilisateur proprietaire;
 
+
+    private String queryFilter(int[] marques, int[] categories) {
+        String sql = "SELECT * FROM v_annonce WHERE 1=1";
+        if (marques.length != 0) {
+            sql += " AND marque_id IN (";
+            for (int i = 0; i < marques.length; i++) {
+                int marque = marques[i];
+                if (i+1 != marques.length) sql += ", ";
+            }
+        }
+        return sql;
+    }
 
     /**
      * Refuse l'annonce
@@ -151,8 +163,37 @@ public class Annonce {
      * @throws SQLException
      */
     public List<Annonce> findSended(int utilisateurId, Connection connection) throws SQLException{
-        //v_annonce where utilisateur_id=?
-        return new ArrayList<>();
+        List<Annonce> models = new ArrayList<>();
+        boolean wasConnected = true;
+        
+        if(connection == null) {
+            wasConnected = false;
+            connection = DBConnection.getConnection();
+        }
+        String sql = "SELECT * FROM v_annonce WHERE utilisateur_id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, utilisateurId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Annonce model = new Annonce();
+                model.setId(rs.getInt("annonce_id"));
+                model.setPrixInitial(rs.getDouble("prix_initial"));
+                model.setDatePublication(rs.getDate("date_publication"));
+                model.setDateFermeture(rs.getDate("date_fermeture"));
+                model.setDescription(rs.getString("description"));
+                model.setVehiculeId(rs.getInt("vehicule_id"));
+                model.setEtat(rs.getInt("etat_annonce"));
+                model.setVehicule(Vehicule.resultSetToVehicule(rs));
+                model.setProprietaire(Utilisateur.resultSetToUtilisateur(rs));
+            }
+        } catch (SQLException ex) {
+            throw ex;
+        } finally {
+            if (!wasConnected) {
+                connection.close();
+            }
+        }
+        return models;
     }
 
     /**
@@ -203,9 +244,11 @@ public class Annonce {
      * @param utilisateurId l'identifiant de l'utilisateur qui met en favori
      * @param annonceId l'identifiant de l'annonce a mettre en favorie
      * @param connection
+     * @throws SQLException
      */
-    public static void addToFavorite(int utilisateurId, int annonceId, Connection connection) {
-        //TODO: ajouter dans les favories
+    public void addToFavorite(Connection connection) throws SQLException {
+        Favori favori = new Favori(this.getUtilisateurId(), this.getId());
+        favori.save(connection);
     }
 
     /**
@@ -264,22 +307,23 @@ public class Annonce {
             connection = DBConnection.getConnection();
         }
         
-        String sql = "SELECT * FROM v_annonce_dispo_detailled";
+        String sql = "SELECT * FROM v_annonce WHERE etat_annonce = ?";
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            ResultSet rs = preparedStatement.executeQuery()) {
-                while (rs.next()) {
-                    Annonce model = new Annonce();
-                    model.setId(rs.getInt("annonce_id"));
-                    model.setPrixInitial(rs.getDouble("prix_initial"));
-                    model.setDatePublication(rs.getDate("date_publication"));
-                    model.setDateFermeture(rs.getDate("date_fermeture"));
-                    model.setDescription(rs.getString("description"));
-                    model.setVehiculeId(rs.getInt("vehicule_id"));
-                    model.setEtat(rs.getInt("etat_annonce"));
-                    model.setVehicule(Vehicule.resultSetToVehicule(rs));
-                    models.add(model);
-                }   
+        try (PreparedStatement stmt = connection.prepareStatement(sql) ) {
+            stmt.setInt(1, DISPONIBLE);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Annonce model = new Annonce();
+                model.setId(rs.getInt("annonce_id"));
+                model.setPrixInitial(rs.getDouble("prix_initial"));
+                model.setDatePublication(rs.getDate("date_publication"));
+                model.setDateFermeture(rs.getDate("date_fermeture"));
+                model.setDescription(rs.getString("description"));
+                model.setVehiculeId(rs.getInt("vehicule_id"));
+                model.setEtat(rs.getInt("etat_annonce"));
+                model.setVehicule(Vehicule.resultSetToVehicule(rs));
+                models.add(model);
+            }   
         } catch (SQLException ex) {
             throw ex;
         } finally {

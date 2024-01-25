@@ -1,8 +1,6 @@
 package mg.company.varotravam.models;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Vector;
 
 import java.sql.Connection;
@@ -14,10 +12,10 @@ import mg.company.varotravam.utils.DBConnection;
 
 
 
-public class Marque {
+public class Couleur {
     int id;
     String nom;
-    int nbVente;
+    String valeur;
 
     public int getId() {
         return id;
@@ -34,42 +32,6 @@ public class Marque {
     
 
     /**
-     * Récupère la liste des marques les plus vendues
-     * @param connection
-     * @return
-     * @throws SQLException
-     */
-    public List<Marque> getMostSelled(Connection connection) throws SQLException {
-        List<Marque> models = new ArrayList<>();
-        boolean wasConnected = true;
-
-        if(connection == null) {
-            wasConnected = false;
-            connection = DBConnection.getConnection();
-        }
-
-        String sql = "SELECT marque_id, marque, count(*) nb_vente FROM v_annonce_vendu GROUP BY marque_id, marque";
-
-        try (PreparedStatement stmt = connection.prepareStatement(sql)){
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                Marque model = new Marque();
-                model.setId(rs.getInt("marque_id"));
-                model.setNom(rs.getString("marque"));
-                model.setNbVente(rs.getInt("nb_vente"));
-                models.add(model);
-            }
-        } catch (SQLException throwables) {
-            throw throwables;
-        } finally {
-            if (!wasConnected) {
-                connection.close();
-            }
-        }
-        return models;
-    }
-
-    /**
      * Récupère le nombre de page necessaire pour afficher toutes le modèle
      * @param connection
      * @return
@@ -84,7 +46,7 @@ public class Marque {
             connection = DBConnection.getConnection();
         }
 
-        String sql = "SELECT count(*) / ? nb FROM marque WHERE etat = ?";
+        String sql = "SELECT count(*) / ? nb FROM couleur WHERE etat = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)){
             stmt.setInt(1, PAGINATION);
@@ -103,8 +65,8 @@ public class Marque {
         return nb;
     }
 
-    public Vector<Marque> getAll(Connection connection, int start) throws SQLException{
-        Vector<Marque> vitesses = new Vector<>();
+    public Vector<Couleur> getAll(Connection connection, int start) throws SQLException{
+        Vector<Couleur> models = new Vector<>();
         boolean wasConnected = true;
 
         if(connection == null) {
@@ -112,7 +74,7 @@ public class Marque {
             connection = DBConnection.getConnection();
         }
 
-        String sql = "SELECT * FROM marque WHERE etat=? ORDER BY nom LIMIT ? OFFSET ?";
+        String sql = "SELECT * FROM couleur WHERE etat=? ORDER BY nom LIMIT ? OFFSET ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)){
             stmt.setInt(1, DISPONIBLE);
@@ -120,10 +82,11 @@ public class Marque {
             stmt.setInt(3, start * PAGINATION);
             ResultSet resultSet = stmt.executeQuery();
             while (resultSet.next()) {
-                Marque vitesse = new Marque();
-                vitesse.setId(resultSet.getInt("id"));
-                vitesse.setNom(resultSet.getString("nom"));
-                vitesses.add(vitesse);
+                Couleur model = new Couleur();
+                model.setId(resultSet.getInt("id"));
+                model.setNom(resultSet.getString("nom"));
+                model.setValeur(resultSet.getString("valeur"));
+                models.add(model);
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -132,11 +95,11 @@ public class Marque {
                 connection.close();
             }
         }
-        return vitesses;
+        return models;
     }
 
-    public Vector<Marque> getAll(Connection connection) throws SQLException{
-        Vector<Marque> vitesses = new Vector<>();
+    public Vector<Couleur> getAll(Connection connection) throws SQLException{
+        Vector<Couleur> models = new Vector<>();
         boolean wasConnected = true;
 
         if(connection == null) {
@@ -144,16 +107,17 @@ public class Marque {
             connection = DBConnection.getConnection();
         }
 
-        String sql = "SELECT * FROM marque WHERE etat=? ORDER BY nom";
+        String sql = "SELECT * FROM couleur WHERE etat=? ORDER BY nom";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)){
             stmt.setInt(1, DISPONIBLE);
             ResultSet resultSet = stmt.executeQuery();
             while (resultSet.next()) {
-                Marque vitesse = new Marque();
-                vitesse.setId(resultSet.getInt("id"));
-                vitesse.setNom(resultSet.getString("nom"));
-                vitesses.add(vitesse);
+                Couleur model = new Couleur();
+                model.setId(resultSet.getInt("id"));
+                model.setNom(resultSet.getString("nom"));
+                model.setValeur(resultSet.getString("valeur"));
+                models.add(model);
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -162,11 +126,11 @@ public class Marque {
                 connection.close();
             }
         }
-        return vitesses;
+        return models;
     }
 
-    public Marque findById (Connection connection, int id) throws  SQLException,Exception{
-        Marque model = null;
+    public Couleur findById (Connection connection, int id) throws  SQLException,Exception{
+        Couleur model = null;
         boolean wasConnected = true;
         if(connection == null) {
             wasConnected = false;
@@ -174,12 +138,12 @@ public class Marque {
         }
 
         try {
-            String sql = "SELECT * FROM marque WHERE id = ?";
+            String sql = "SELECT * FROM couleur WHERE id = ?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setInt(1, id);
                 ResultSet rs = stmt.executeQuery();
                 if (rs.next()) {
-                    model = new Marque();
+                    model = new Couleur();
                     model.setId(rs.getInt("id"));
                     model.setNom(rs.getString("nom"));
                     return model;
@@ -202,7 +166,7 @@ public class Marque {
             wasConnected = false;
             connection = DBConnection.getConnection();
         }
-        String sql = "INSERT INTO marque(id, nom) VALUES (default, ?) ON CONFLICT(nom) DO UPDATE SET etat=? RETURNING id";
+        String sql = "INSERT INTO couleur(id, nom) VALUES (default, ?) ON CONFLICT(nom) DO UPDATE SET etat=? RETURNING id";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, this.getNom());
@@ -227,11 +191,12 @@ public class Marque {
             wasConnected = false;
             connection = DBConnection.getConnection();
         }
-        String sql = "UPDATE marque SET nom=? WHERE id=?";
+        String sql = "UPDATE couleur SET nom=?,valeur=? WHERE id=?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, this.getNom());
-            stmt.setInt(2, this.getId());
+            stmt.setString(2, this.getValeur());
+            stmt.setInt(3, this.getId());
             stmt.executeUpdate();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -250,7 +215,7 @@ public class Marque {
             wasConnected = false;
             connection = DBConnection.getConnection();
         }
-        String sql = "UPDATE marque SET etat=? WHERE id=?";
+        String sql = "UPDATE couleur SET etat=? WHERE id=?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, INDISPONIBLE);
             stmt.setInt(2, this.getId());
@@ -264,10 +229,10 @@ public class Marque {
             }
         }
     }
-    public int getNbVente() {
-        return nbVente;
+    public String getValeur() {
+        return valeur;
     }
-    public void setNbVente(int nbVente) {
-        this.nbVente = nbVente;
+    public void setValeur(String valeur) {
+        this.valeur = valeur;
     }
 }
