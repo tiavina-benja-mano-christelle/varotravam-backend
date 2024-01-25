@@ -265,12 +265,4 @@ public class AnnoncesController {
         }
         return new ResponseEntity<Bag>(HttpStatus.OK);
     }
-    
-    
-
-    
-
-
-    
-
 }
