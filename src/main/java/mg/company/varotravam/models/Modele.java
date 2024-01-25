@@ -108,6 +108,13 @@ public class Modele {
         return nb;
     }
 
+    /**
+     * récupère une partie modele 
+     * @param connection
+     * @param start
+     * @return
+     * @throws SQLException
+     */
     public Vector<Modele> getAll(Connection connection, int start) throws SQLException{
         Vector<Modele> models = new Vector<>();
         boolean wasConnected = true;
@@ -142,6 +149,12 @@ public class Modele {
         return models;
     }
 
+    /**
+     * Récupère tous les modèles existant
+     * @param connection
+     * @return
+     * @throws SQLException
+     */
     public Vector<Modele> getAll(Connection connection) throws SQLException{
         Vector<Modele> models = new Vector<>();
         boolean wasConnected = true;
@@ -174,7 +187,14 @@ public class Modele {
         return models;
     }
 
-    public Modele findById (Connection connection, int id) throws  SQLException,Exception{
+    /**
+     * récupère le modele mar id
+     * @param connection
+     * @param id
+     * @return
+     * @throws SQLException
+     */
+    public Modele findById (Connection connection, int id) throws  SQLException{
         Modele model = null;
         boolean wasConnected = true;
         if(connection == null) {
@@ -196,8 +216,8 @@ public class Modele {
                     return model;
                 } 
             }
-            throw new Exception("Error");
-        } catch(Exception ex) {
+            throw new SQLException("Modele not found");
+        } catch(SQLException ex) {
             throw ex;
         } finally {
             if (!wasConnected) {
