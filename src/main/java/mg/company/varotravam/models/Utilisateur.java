@@ -1,9 +1,6 @@
 package mg.company.varotravam.models;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 import mg.company.varotravam.utils.DBConnection;
 
@@ -13,6 +10,9 @@ public class Utilisateur {
     String email;
     String motDePasse;
     boolean administrateur;
+
+    //changement
+    Date date_inscription;
 
     /**
      * Vérifie si l'identifiant correspond à un utilisateur
@@ -188,7 +188,32 @@ public class Utilisateur {
             }
         }
     }
-
+    //GRAPHE : inscrit ttl
+    public static int getTtlInscrit(Connection connection) throws Exception{
+        boolean wasConnected = true;
+        if(connection == null) {
+            wasConnected = false;
+            connection = DBConnection.getConnection();
+        }
+        int ttl = 0;
+        try {
+            String sql = "SELECT count(*) AS inscrit from utilisateur;";
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                   ttl = rs.getInt("insccrit");
+                    return ttl;
+                }
+            }
+            throw new Exception("Email inconnue");
+        } catch(Exception ex) {
+            throw ex;
+        } finally {
+            if (!wasConnected) {
+                connection.close();
+            }
+        }
+    }
 
     public int getId() {
         return id;
@@ -220,6 +245,7 @@ public class Utilisateur {
     public void setAdministrateur(boolean administrateur) {
         this.administrateur = administrateur;
     }
-
-    
+    //date_inscription
+    public Date getDate_inscription() {return date_inscription;}
+    public void setDate_inscription(Date date_inscription) {this.date_inscription = date_inscription;}
 }
