@@ -1,6 +1,8 @@
 package mg.company.varotravam.models;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import mg.company.varotravam.utils.DBConnection;
 
@@ -14,6 +16,8 @@ public class Utilisateur {
     //changement
     Date date_inscription;
 
+    //GRAPHE
+    int periode ,temp , nombre;
     /**
      * Vérifie si l'identifiant correspond à un utilisateur
      * @param id
@@ -214,6 +218,99 @@ public class Utilisateur {
             }
         }
     }
+    //GRAPHE
+    //month
+    public List<Utilisateur> getUserByMonth(Connection connection) throws Exception {
+        List<Utilisateur> models = new ArrayList<>();
+        boolean wasConnected = true;
+
+        if(connection == null) {
+            wasConnected = false;
+            connection = DBConnection.getConnection();
+        }
+
+        String sql = "SELECT gs.mois, COALESCE(COUNT(u.id), 0) AS nombre_inscrits\n" +
+                "FROM generate_series(1, 12) gs(mois)\n" +
+                "LEFT JOIN utilisateur u ON EXTRACT(MONTH FROM u.date_inscription) = gs.mois\n" +
+                "GROUP BY gs.mois  ORDER BY gs.mois;";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Utilisateur model = new Utilisateur();
+                model.setPeriode(rs.getInt("mois"));
+                model.setNombre(rs.getInt("nombre_inscrits"));
+                models.add(model);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            if (!wasConnected) {
+                connection.close();
+            }
+        }
+        return models;
+    }
+
+    //year
+    public List<Utilisateur> getUserByYear(Connection connection) throws Exception {
+        List<Utilisateur> models = new ArrayList<>();
+        boolean wasConnected = true;
+
+        if(connection == null) {
+            wasConnected = false;
+            connection = DBConnection.getConnection();
+        }
+
+        String sql = "SELECT EXTRACT(YEAR FROM date_inscription) AS annee, COUNT(*) AS nombre_inscrits\n" +
+                "FROM utilisateur\n" +
+                "GROUP BY EXTRACT(YEAR FROM date_inscription)  ORDER BY annee";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Utilisateur model = new Utilisateur();
+                model.setPeriode(rs.getInt("annee"));
+                model.setNombre(rs.getInt("nombre_inscrits"));
+                models.add(model);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            if (!wasConnected) {
+                connection.close();
+            }
+        }
+        return models;
+    }
+    //both
+    public List<Utilisateur> getUserBoth(Connection connection) throws Exception {
+        List<Utilisateur> models = new ArrayList<>();
+        boolean wasConnected = true;
+
+        if(connection == null) {
+            wasConnected = false;
+            connection = DBConnection.getConnection();
+        }
+
+        String sql = "SELECT EXTRACT(YEAR FROM date_inscription) AS annee, EXTRACT(MONTH FROM date_inscription) AS mois, COUNT(*) AS nombre_inscrits FROM utilisateur\n" +
+                "GROUP BY EXTRACT(YEAR FROM date_inscription), EXTRACT(MONTH FROM date_inscription)  ORDER BY annee, mois;\n";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Utilisateur model = new Utilisateur();
+                model.setPeriode(rs.getInt("annee"));
+                model.setTemp(rs.getInt("mois"));
+                model.setNombre(rs.getInt("nombre_inscrits"));
+                models.add(model);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            if (!wasConnected) {
+                connection.close();
+            }
+        }
+        return models;
+    }
 
     public int getId() {
         return id;
@@ -248,4 +345,12 @@ public class Utilisateur {
     //date_inscription
     public Date getDate_inscription() {return date_inscription;}
     public void setDate_inscription(Date date_inscription) {this.date_inscription = date_inscription;}
+
+    //GRAPHE :
+    public int getPeriode() {return periode;}
+    public void setPeriode(int periode) {this.periode = periode;}
+    public int getNombre() {return nombre;}
+    public void setNombre(int nombre){ this.nombre = nombre;}
+    public int getTemp() {return temp;}
+    public void setTemp(int temp) {this.temp = temp;}
 }

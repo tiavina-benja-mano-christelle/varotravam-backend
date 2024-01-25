@@ -21,7 +21,7 @@ public class Annonce {
     int etat;
     Vehicule vehicule;
     //graphe
-    int periode,nombre;
+    int periode,temp,nombre;
 
     /**
      * Ajoute l'annonce au favori de l'utilisateur
@@ -161,7 +161,8 @@ public class Annonce {
         }
     }
     //GRAPHE
-    //par mois annee actuel
+    //par mois ,annee actuel
+    //mois
     public List<Annonce> getNewByMonth(Connection connection,int etat) throws Exception {
         List<Annonce> models = new ArrayList<>();
         boolean wasConnected = true;
@@ -173,7 +174,7 @@ public class Annonce {
 
         String sql = "SELECT  mois, COALESCE(COUNT(a.id), 0) AS nombre_annonces FROM generate_series(1, 12) mois\n" +
                 "LEFT JOIN \"public\".annonce a ON EXTRACT(MONTH FROM a.date_publication) = mois AND a.etat = ?\n" +
-                "GROUP BY mois ORDER BY mois ASC;";
+                "GROUP BY mois ORDER BY mois ASC";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, etat);
             ResultSet rs = stmt.executeQuery();
@@ -192,6 +193,7 @@ public class Annonce {
         }
         return models;
     }
+    //year
     public List<Annonce> getNewByYear(Connection connection,int etat) throws Exception {
         List<Annonce> models = new ArrayList<>();
         boolean wasConnected = true;
@@ -204,7 +206,7 @@ public class Annonce {
         String sql = " SELECT  EXTRACT(YEAR FROM date_publication) AS annee,  COUNT(*) AS nombre_annonces\n" +
                 "FROM \"public\".annonce WHERE annonce.etat = ?\n" +
                 "GROUP BY EXTRACT(YEAR FROM date_publication)\n" +
-                "ORDER BY EXTRACT(YEAR FROM date_publication) ASC;";
+                "ORDER BY EXTRACT(YEAR FROM date_publication) ASC";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, etat);
             ResultSet rs = stmt.executeQuery();
@@ -223,7 +225,38 @@ public class Annonce {
         }
         return models;
     }
+    //both
+    public List<Annonce> getNewBoth(Connection connection,int etat) throws Exception {
+        List<Annonce> models = new ArrayList<>();
+        boolean wasConnected = true;
 
+        if(connection == null) {
+            wasConnected = false;
+            connection = DBConnection.getConnection();
+        }
+
+        String sql = "SELECT  EXTRACT(YEAR FROM date_publication) AS annee,  EXTRACT(MONTH FROM date_publication) as mois, COUNT(*) AS nombre_annonces\n" +
+                "FROM \"public\".annonce WHERE annonce.etat = ?\n" +
+                "GROUP BY EXTRACT(YEAR FROM date_publication) ,  EXTRACT(MONTH FROM date_publication) ORDER BY annee , mois\n";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, etat);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Annonce model = new Annonce();
+                model.setPeriode(rs.getInt("annee"));
+                model.setTemp(rs.getInt("mois"));
+                model.setNombre(rs.getInt("nombre_annonces"));
+                models.add(model);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            if (!wasConnected) {
+                connection.close();
+            }
+        }
+        return models;
+    }
 
 
     public int getId() {
@@ -287,5 +320,8 @@ public class Annonce {
     public void setPeriode(int periode) {this.periode = periode;}
     public int getNombre() {return nombre;}
     public void setNombre(int nombre){ this.nombre = nombre;}
+
+    public int getTemp() {return temp;}
+    public void setTemp(int temp) {this.temp = temp;}
 
 }
