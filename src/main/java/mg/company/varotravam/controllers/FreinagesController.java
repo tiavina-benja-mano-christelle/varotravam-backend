@@ -1,17 +1,22 @@
 package mg.company.varotravam.controllers;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.servlet.http.HttpServletRequest;
+import mg.company.varotravam.exceptions.NotAuthorizedException;
 import mg.company.varotravam.models.Freinage;
 import mg.company.varotravam.utils.Bag;
-
-import java.sql.SQLException;
+import mg.company.varotravam.utils.JWTtokens;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 
@@ -19,28 +24,89 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RestController
 @RequestMapping("/api/v1/freinages")
 public class FreinagesController extends MonController {
+
+    @GetMapping("/pages")
+    public ResponseEntity<Bag> getNbPage() {
+        Bag bag = new Bag();
+        try {
+            bag.setData(new Freinage().getNbPage(null));
+        } catch (Exception e) {
+            bag.setError(e.getMessage());
+            return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<Bag>(bag, HttpStatus.OK);
+    }
     
-    @GetMapping("")
-    public ResponseEntity<Bag> recupererTout() {
+    
+    @GetMapping
+    public ResponseEntity<Bag> getAll() {
+        Bag bag = new Bag();
         try {
             bag.setData(new Freinage().getAll(null));
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (Exception e) {
             bag.setError(e.getMessage());
             return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<Bag>(bag, HttpStatus.OK);
     }
 
-    @PostMapping("")
-    public ResponseEntity<Bag> ajouter(@RequestBody Freinage freinage) {
+    @GetMapping("/{start}")
+    public ResponseEntity<Bag> getAll(@PathVariable int start) {
+        Bag bag = new Bag();
         try {
-            freinage.save(null);
-        } catch (SQLException | ClassNotFoundException e) {
+            bag.setData(new Freinage().getAll(null, start));
+        } catch (Exception e) {
             bag.setError(e.getMessage());
             return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<Bag>(bag, HttpStatus.OK);
     }
+
+    @PostMapping
+    public ResponseEntity<Bag> add(@RequestBody Freinage transmission, HttpServletRequest request) {
+        Bag bag = new Bag();
+        try {
+            JWTtokens.checkWithRole(request, "admin");
+            transmission.save(null);
+        } catch (NotAuthorizedException e) {
+            return new ResponseEntity<Bag>(HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
+            return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<Bag>(HttpStatus.OK);
+    }
+
+    
+    @PutMapping
+    public ResponseEntity<Bag> update(@RequestBody Freinage transmission, HttpServletRequest request) {
+        Bag bag = new Bag();
+        try {
+            JWTtokens.checkWithRole(request, "admin");
+            transmission.update(null);
+        } catch (NotAuthorizedException e) {
+            return new ResponseEntity<Bag>(HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
+            return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<Bag>(HttpStatus.OK);
+    }
+
+    
+    @DeleteMapping
+    public ResponseEntity<Bag> delete(@RequestBody Freinage transmission, HttpServletRequest request) {
+        Bag bag = new Bag();
+        try {
+            JWTtokens.checkWithRole(request, "admin");
+            transmission.delete(transmission.getId(), null);
+        } catch (NotAuthorizedException e) {
+            return new ResponseEntity<Bag>(HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
+            return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<Bag>(HttpStatus.OK);
+    }
+
+    
     
     
 

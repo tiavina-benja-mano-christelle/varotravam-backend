@@ -12,9 +12,10 @@ import mg.company.varotravam.utils.DBConnection;
 
 
 
-public class Energie {
+public class Couleur {
     int id;
     String nom;
+    String valeur;
 
     public int getId() {
         return id;
@@ -28,6 +29,7 @@ public class Energie {
     public void setNom(String nom) {
         this.nom = nom;
     }
+    
 
     /**
      * Récupère le nombre de page necessaire pour afficher toutes le modèle
@@ -44,7 +46,7 @@ public class Energie {
             connection = DBConnection.getConnection();
         }
 
-        String sql = "SELECT count(*) / ? nb FROM energie WHERE etat = ?";
+        String sql = "SELECT count(*) / ? nb FROM couleur WHERE etat = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)){
             stmt.setInt(1, PAGINATION);
@@ -63,8 +65,8 @@ public class Energie {
         return nb;
     }
 
-    public Vector<Energie> getAll(Connection connection, int start) throws SQLException{
-        Vector<Energie> vitesses = new Vector<>();
+    public Vector<Couleur> getAll(Connection connection, int start) throws SQLException{
+        Vector<Couleur> models = new Vector<>();
         boolean wasConnected = true;
 
         if(connection == null) {
@@ -72,7 +74,7 @@ public class Energie {
             connection = DBConnection.getConnection();
         }
 
-        String sql = "SELECT * FROM energie WHERE etat=? ORDER BY nom LIMIT ? OFFSET ?";
+        String sql = "SELECT * FROM couleur WHERE etat=? ORDER BY nom LIMIT ? OFFSET ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)){
             stmt.setInt(1, DISPONIBLE);
@@ -80,10 +82,11 @@ public class Energie {
             stmt.setInt(3, start * PAGINATION);
             ResultSet resultSet = stmt.executeQuery();
             while (resultSet.next()) {
-                Energie vitesse = new Energie();
-                vitesse.setId(resultSet.getInt("id"));
-                vitesse.setNom(resultSet.getString("nom"));
-                vitesses.add(vitesse);
+                Couleur model = new Couleur();
+                model.setId(resultSet.getInt("id"));
+                model.setNom(resultSet.getString("nom"));
+                model.setValeur(resultSet.getString("valeur"));
+                models.add(model);
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -92,11 +95,11 @@ public class Energie {
                 connection.close();
             }
         }
-        return vitesses;
+        return models;
     }
 
-    public Vector<Energie> getAll(Connection connection) throws SQLException{
-        Vector<Energie> vitesses = new Vector<>();
+    public Vector<Couleur> getAll(Connection connection) throws SQLException{
+        Vector<Couleur> models = new Vector<>();
         boolean wasConnected = true;
 
         if(connection == null) {
@@ -104,16 +107,17 @@ public class Energie {
             connection = DBConnection.getConnection();
         }
 
-        String sql = "SELECT * FROM energie WHERE etat=? ORDER BY nom";
+        String sql = "SELECT * FROM couleur WHERE etat=? ORDER BY nom";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)){
             stmt.setInt(1, DISPONIBLE);
             ResultSet resultSet = stmt.executeQuery();
             while (resultSet.next()) {
-                Energie vitesse = new Energie();
-                vitesse.setId(resultSet.getInt("id"));
-                vitesse.setNom(resultSet.getString("nom"));
-                vitesses.add(vitesse);
+                Couleur model = new Couleur();
+                model.setId(resultSet.getInt("id"));
+                model.setNom(resultSet.getString("nom"));
+                model.setValeur(resultSet.getString("valeur"));
+                models.add(model);
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -122,11 +126,11 @@ public class Energie {
                 connection.close();
             }
         }
-        return vitesses;
+        return models;
     }
 
-    public Energie findById (Connection connection, int id) throws  SQLException,Exception{
-        Energie model = null;
+    public Couleur findById (Connection connection, int id) throws  SQLException,Exception{
+        Couleur model = null;
         boolean wasConnected = true;
         if(connection == null) {
             wasConnected = false;
@@ -134,12 +138,12 @@ public class Energie {
         }
 
         try {
-            String sql = "SELECT * FROM energie WHERE id = ?";
+            String sql = "SELECT * FROM couleur WHERE id = ?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setInt(1, id);
                 ResultSet rs = stmt.executeQuery();
                 if (rs.next()) {
-                    model = new Energie();
+                    model = new Couleur();
                     model.setId(rs.getInt("id"));
                     model.setNom(rs.getString("nom"));
                     return model;
@@ -162,7 +166,7 @@ public class Energie {
             wasConnected = false;
             connection = DBConnection.getConnection();
         }
-        String sql = "INSERT INTO energie(id, nom) VALUES (default, ?) ON CONFLICT(nom) DO UPDATE SET etat=? RETURNING id";
+        String sql = "INSERT INTO couleur(id, nom) VALUES (default, ?) ON CONFLICT(nom) DO UPDATE SET etat=? RETURNING id";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, this.getNom());
@@ -187,11 +191,12 @@ public class Energie {
             wasConnected = false;
             connection = DBConnection.getConnection();
         }
-        String sql = "UPDATE energie SET nom=? WHERE id=?";
+        String sql = "UPDATE couleur SET nom=?,valeur=? WHERE id=?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, this.getNom());
-            stmt.setInt(2, this.getId());
+            stmt.setString(2, this.getValeur());
+            stmt.setInt(3, this.getId());
             stmt.executeUpdate();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -210,7 +215,7 @@ public class Energie {
             wasConnected = false;
             connection = DBConnection.getConnection();
         }
-        String sql = "UPDATE energie SET etat=? WHERE id=?";
+        String sql = "UPDATE couleur SET etat=? WHERE id=?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, INDISPONIBLE);
             stmt.setInt(2, this.getId());
@@ -223,5 +228,11 @@ public class Energie {
                 connection.close();
             }
         }
+    }
+    public String getValeur() {
+        return valeur;
+    }
+    public void setValeur(String valeur) {
+        this.valeur = valeur;
     }
 }

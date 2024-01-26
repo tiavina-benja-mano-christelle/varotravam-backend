@@ -6,9 +6,11 @@ import java.util.Vector;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 
+import static mg.company.varotravam.models.utils.Util.*;
 import mg.company.varotravam.utils.DBConnection;
+
+
 
 public class Categorie {
     int id;
@@ -27,20 +29,14 @@ public class Categorie {
         this.nom = nom;
     }
 
-    public Categorie(int id, String nom) {
-        this.id = id;
-        this.nom = nom;
-    }
-
-    public Categorie(String nom) {
-        this.nom = nom;
-    }
-
-    public Categorie() {
-    }
-
-    public Vector<Categorie> getAll(Connection connection) throws ClassNotFoundException, SQLException{
-        Vector<Categorie> categories = new Vector<>();
+    /**
+     * Récupère le nombre de page necessaire pour afficher toutes le modèle
+     * @param connection
+     * @return
+     * @throws SQLException
+     */
+    public int getNbPage(Connection connection) throws SQLException{
+        int nb = 0;
         boolean wasConnected = true;
 
         if(connection == null) {
@@ -48,15 +44,14 @@ public class Categorie {
             connection = DBConnection.getConnection();
         }
 
-        String sql = "select * from categorie";
+        String sql = "SELECT count(*) / ? nb FROM categorie WHERE etat = ?";
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            ResultSet resultSet = preparedStatement.executeQuery()) {
-            while (resultSet.next()) {
-                Categorie categorie = new Categorie();
-                categorie.setId(resultSet.getInt("id"));
-                categorie.setNom(resultSet.getString("nom"));
-                categories.add(categorie);
+        try (PreparedStatement stmt = connection.prepareStatement(sql)){
+            stmt.setInt(1, PAGINATION);
+            stmt.setInt(2, DISPONIBLE);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                nb = rs.getInt("nb");
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -65,10 +60,72 @@ public class Categorie {
                 connection.close();
             }
         }
-        return categories;
+        return nb;
     }
 
-    public Categorie findById (Connection connection, int id) throws Exception{
+    public Vector<Categorie> getAll(Connection connection, int start) throws SQLException{
+        Vector<Categorie> vitesses = new Vector<>();
+        boolean wasConnected = true;
+
+        if(connection == null) {
+            wasConnected = false;
+            connection = DBConnection.getConnection();
+        }
+
+        String sql = "SELECT * FROM categorie WHERE etat=? ORDER BY nom LIMIT ? OFFSET ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)){
+            stmt.setInt(1, DISPONIBLE);
+            stmt.setInt(2, PAGINATION);
+            stmt.setInt(3, start * PAGINATION);
+            ResultSet resultSet = stmt.executeQuery();
+            while (resultSet.next()) {
+                Categorie vitesse = new Categorie();
+                vitesse.setId(resultSet.getInt("id"));
+                vitesse.setNom(resultSet.getString("nom"));
+                vitesses.add(vitesse);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            if (!wasConnected) {
+                connection.close();
+            }
+        }
+        return vitesses;
+    }
+
+    public Vector<Categorie> getAll(Connection connection) throws SQLException{
+        Vector<Categorie> vitesses = new Vector<>();
+        boolean wasConnected = true;
+
+        if(connection == null) {
+            wasConnected = false;
+            connection = DBConnection.getConnection();
+        }
+
+        String sql = "SELECT * FROM categorie WHERE etat=? ORDER BY nom";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)){
+            stmt.setInt(1, DISPONIBLE);
+            ResultSet resultSet = stmt.executeQuery();
+            while (resultSet.next()) {
+                Categorie vitesse = new Categorie();
+                vitesse.setId(resultSet.getInt("id"));
+                vitesse.setNom(resultSet.getString("nom"));
+                vitesses.add(vitesse);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            if (!wasConnected) {
+                connection.close();
+            }
+        }
+        return vitesses;
+    }
+
+    public Categorie findById (Connection connection, int id) throws  SQLException,Exception{
         Categorie model = null;
         boolean wasConnected = true;
         if(connection == null) {
@@ -87,8 +144,8 @@ public class Categorie {
                     model.setNom(rs.getString("nom"));
                     return model;
                 } 
-            } 
-            throw new Exception("Categorie not found");
+            }
+            throw new Exception("Error");
         } catch(Exception ex) {
             throw ex;
         } finally {
@@ -98,18 +155,67 @@ public class Categorie {
         }
     }
 
-    public void save(Connection connection) throws SQLException, ClassNotFoundException {
+    public void save(Connection connection) throws SQLException {
         boolean wasConnected = true;
 
         if(connection == null) {
             wasConnected = false;
             connection = DBConnection.getConnection();
         }
-        String sql = "insert into categorie(id, nom) values(default, ?)";
+        String sql = "INSERT INTO categorie(id, nom) VALUES (default, ?) ON CONFLICT(nom) DO UPDATE SET etat=? RETURNING id";
 
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, getNom());
-            statement.executeUpdate();
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, this.getNom());
+            stmt.setInt(2, DISPONIBLE);
+            ResultSet rs = stmt.executeQuery();
+            if(rs.next()) {
+                this.setId(rs.getInt("id"));
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            if (!wasConnected) {
+                connection.close();
+            }
+        }
+    }
+
+    public void update(Connection connection) throws SQLException {
+        boolean wasConnected = true;
+
+        if(connection == null) {
+            wasConnected = false;
+            connection = DBConnection.getConnection();
+        }
+        String sql = "UPDATE categorie SET nom=? WHERE id=?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, this.getNom());
+            stmt.setInt(2, this.getId());
+            stmt.executeUpdate();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            if (!wasConnected) {
+                connection.close();
+            }
+        }
+    }
+
+    
+    public void delete(int id, Connection connection) throws SQLException, ClassNotFoundException {
+        boolean wasConnected = true;
+
+        if(connection == null) {
+            wasConnected = false;
+            connection = DBConnection.getConnection();
+        }
+        String sql = "UPDATE categorie SET etat=? WHERE id=?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, INDISPONIBLE);
+            stmt.setInt(2, this.getId());
+            System.out.println(stmt);
+            stmt.executeUpdate();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         } finally {

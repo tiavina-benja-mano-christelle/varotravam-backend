@@ -12,7 +12,7 @@ import mg.company.varotravam.utils.DBConnection;
 
 
 
-public class Energie {
+public class Equipement {
     int id;
     String nom;
 
@@ -44,7 +44,7 @@ public class Energie {
             connection = DBConnection.getConnection();
         }
 
-        String sql = "SELECT count(*) / ? nb FROM energie WHERE etat = ?";
+        String sql = "SELECT count(*) / ? nb FROM equipement WHERE etat = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)){
             stmt.setInt(1, PAGINATION);
@@ -63,8 +63,8 @@ public class Energie {
         return nb;
     }
 
-    public Vector<Energie> getAll(Connection connection, int start) throws SQLException{
-        Vector<Energie> vitesses = new Vector<>();
+    public Vector<Equipement> getAll(Connection connection, int start) throws SQLException{
+        Vector<Equipement> vitesses = new Vector<>();
         boolean wasConnected = true;
 
         if(connection == null) {
@@ -72,7 +72,7 @@ public class Energie {
             connection = DBConnection.getConnection();
         }
 
-        String sql = "SELECT * FROM energie WHERE etat=? ORDER BY nom LIMIT ? OFFSET ?";
+        String sql = "SELECT * FROM equipement WHERE etat=? ORDER BY nom LIMIT ? OFFSET ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)){
             stmt.setInt(1, DISPONIBLE);
@@ -80,7 +80,7 @@ public class Energie {
             stmt.setInt(3, start * PAGINATION);
             ResultSet resultSet = stmt.executeQuery();
             while (resultSet.next()) {
-                Energie vitesse = new Energie();
+                Equipement vitesse = new Equipement();
                 vitesse.setId(resultSet.getInt("id"));
                 vitesse.setNom(resultSet.getString("nom"));
                 vitesses.add(vitesse);
@@ -95,8 +95,8 @@ public class Energie {
         return vitesses;
     }
 
-    public Vector<Energie> getAll(Connection connection) throws SQLException{
-        Vector<Energie> vitesses = new Vector<>();
+    public Vector<Equipement> getAll(Connection connection) throws SQLException{
+        Vector<Equipement> vitesses = new Vector<>();
         boolean wasConnected = true;
 
         if(connection == null) {
@@ -104,13 +104,13 @@ public class Energie {
             connection = DBConnection.getConnection();
         }
 
-        String sql = "SELECT * FROM energie WHERE etat=? ORDER BY nom";
+        String sql = "SELECT * FROM equipement WHERE etat=? ORDER BY nom";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)){
             stmt.setInt(1, DISPONIBLE);
             ResultSet resultSet = stmt.executeQuery();
             while (resultSet.next()) {
-                Energie vitesse = new Energie();
+                Equipement vitesse = new Equipement();
                 vitesse.setId(resultSet.getInt("id"));
                 vitesse.setNom(resultSet.getString("nom"));
                 vitesses.add(vitesse);
@@ -125,8 +125,8 @@ public class Energie {
         return vitesses;
     }
 
-    public Energie findById (Connection connection, int id) throws  SQLException,Exception{
-        Energie model = null;
+    public Equipement findById (Connection connection, int id) throws  SQLException,Exception{
+        Equipement model = null;
         boolean wasConnected = true;
         if(connection == null) {
             wasConnected = false;
@@ -134,12 +134,12 @@ public class Energie {
         }
 
         try {
-            String sql = "SELECT * FROM energie WHERE id = ?";
+            String sql = "SELECT * FROM equipement WHERE id = ?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setInt(1, id);
                 ResultSet rs = stmt.executeQuery();
                 if (rs.next()) {
-                    model = new Energie();
+                    model = new Equipement();
                     model.setId(rs.getInt("id"));
                     model.setNom(rs.getString("nom"));
                     return model;
@@ -162,7 +162,7 @@ public class Energie {
             wasConnected = false;
             connection = DBConnection.getConnection();
         }
-        String sql = "INSERT INTO energie(id, nom) VALUES (default, ?) ON CONFLICT(nom) DO UPDATE SET etat=? RETURNING id";
+        String sql = "INSERT INTO equipement(id, nom) VALUES (default, ?) ON CONFLICT(nom) DO UPDATE SET etat=? RETURNING id";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, this.getNom());
@@ -187,7 +187,7 @@ public class Energie {
             wasConnected = false;
             connection = DBConnection.getConnection();
         }
-        String sql = "UPDATE energie SET nom=? WHERE id=?";
+        String sql = "UPDATE equipement SET nom=? WHERE id=?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, this.getNom());
@@ -210,7 +210,7 @@ public class Energie {
             wasConnected = false;
             connection = DBConnection.getConnection();
         }
-        String sql = "UPDATE energie SET etat=? WHERE id=?";
+        String sql = "UPDATE equipement SET etat=? WHERE id=?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, INDISPONIBLE);
             stmt.setInt(2, this.getId());

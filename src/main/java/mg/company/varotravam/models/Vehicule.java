@@ -22,6 +22,7 @@ public class Vehicule {
     int freinageId;
     int couleurId;
     int etat;
+    int[] equipementsId;
 
     //Not Mapped
     int marqueId;
@@ -34,6 +35,23 @@ public class Vehicule {
     String couleur;
     String[] images;
     String[] equipements;
+
+    /**
+     * Sauvegarde le vehicule avec ces equipements et images
+     * @param connection
+     * @throws SQLException
+     */
+    public void create(Connection connection) throws SQLException {
+        this.save(connection);
+        for (int equipementId : this.getEquipementsId()) {
+            VehiculeEquipement ve = new VehiculeEquipement(this.getId(), equipementId);
+            ve.save(connection);
+        }
+        for (String image : this.getImages()) {
+            VehiculeImage vi = new VehiculeImage(this.getId(), image);
+            vi.save(connection);
+        }
+    }
 
     static Vehicule resultSetToVehicule(ResultSet rs) throws SQLException {
         Vehicule model = new Vehicule();
@@ -64,7 +82,7 @@ public class Vehicule {
         return model;
     }
 
-    public void save(Connection connection) throws Exception {
+    public void save(Connection connection) throws SQLException {
         boolean wasConnected = true;
         if(connection == null) {
             wasConnected = false;
@@ -85,6 +103,7 @@ public class Vehicule {
             stmt.setInt(9, getModeleId());
             stmt.setInt(10, getFreinageId());
             stmt.setInt(11, getCouleurId());
+            stmt.setInt(12, getEtat());
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 setId(rs.getInt("id"));
@@ -243,6 +262,14 @@ public class Vehicule {
 
     public void setMarqueId(int marqueId) {
         this.marqueId = marqueId;
+    }
+
+    public int[] getEquipementsId() {
+        return equipementsId;
+    }
+
+    public void setEquipementsId(int[] equipementsId) {
+        this.equipementsId = equipementsId;
     }
 
 }

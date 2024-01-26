@@ -1,9 +1,6 @@
 package mg.company.varotravam.models;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 import mg.company.varotravam.utils.DBConnection;
 
@@ -13,6 +10,46 @@ public class Utilisateur {
     String email;
     String motDePasse;
     boolean administrateur;
+    //changement
+    Date date_inscription;
+
+    public static Utilisateur resultSetToUtilisateur(ResultSet rs) throws SQLException {
+        Utilisateur utilisateur = new Utilisateur();
+        utilisateur.setNom(rs.getString("utilisateur_nom"));
+        utilisateur.setEmail(rs.getString("utilisateur_email"));
+        utilisateur.setMotDePasse(rs.getString("mot_de_passe"));
+        return utilisateur;
+    }
+
+    /**
+     * DAO: sauvegarde l'utilisateur
+     * @param connection
+     */
+    public void save(Connection connection) throws SQLException {
+        boolean wasConnected = true;
+
+        if(connection == null) {
+            wasConnected = false;
+            connection = DBConnection.getConnection();
+        }
+        String sql = "INSERT INTO utilisateur (id, nom, email, mot_de_passe, administrateur) VALUES (default, ?, ?, ?, default) RETURNING id";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) 
+        {
+            stmt.setString(1, this.getNom());
+            stmt.setString(2, this.getEmail());
+            stmt.setString(3, this.getMotDePasse());
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                this.setId(rs.getInt("id"));
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            if (!wasConnected) {
+                connection.close();
+            }
+        }
+    }
 
     /**
      * Vérifie si l'identifiant correspond à un utilisateur
@@ -188,7 +225,34 @@ public class Utilisateur {
             }
         }
     }
-
+    //GRAPHE : inscrit ttl
+    public static int getTtlInscrit(Connection connection) throws SQLException{
+        boolean wasConnected = true;
+        if(connection == null) {
+            wasConnected = false;
+            connection = DBConnection.getConnection();
+        }
+        int ttl = 0;
+        try {
+            String sql = "SELECT count(*) AS inscrit from v_utilisateur_client";
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                   ttl = rs.getInt("inscrit");
+                } else {
+                    throw new SQLException("Nombre d'inscrit introuvable");
+                }
+            }
+        } catch(SQLException ex) {
+            ex.printStackTrace();
+            throw ex;
+        } finally {
+            if (!wasConnected) {
+                connection.close();
+            }
+        }
+        return ttl;
+    }
 
     public int getId() {
         return id;
@@ -220,6 +284,7 @@ public class Utilisateur {
     public void setAdministrateur(boolean administrateur) {
         this.administrateur = administrateur;
     }
-
-    
+    //date_inscription
+    public Date getDate_inscription() {return date_inscription;}
+    public void setDate_inscription(Date date_inscription) {this.date_inscription = date_inscription;}
 }

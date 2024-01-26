@@ -2,34 +2,25 @@ package mg.company.varotravam.models;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import mg.company.varotravam.utils.DBConnection;
 
-public class VehiculeImage {
-    int id;
+public class VehiculeEquipement {
     int vehiculeId;
-    String valeur;
+    int equipementId;
 
-    /**
-     * Sauvegarder l'image de la voiture
-     * @param connection
-     */
-    public void save(Connection connection) throws SQLException{
+    public void save(Connection connection) throws SQLException {
         boolean wasConnected = true;
         if(connection == null) {
             wasConnected = false;
             connection = DBConnection.getConnection();
         }
-        String sql = "INSERT INTO \"public\".vehicule_image( vehicule_id, equipement_id) VALUES ( ?, ? ) RETURNING id";
+        String sql = "INSERT INTO \"public\".vehicule_equipement( vehicule_id, equipement_id) VALUES ( ?, ? )";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, this.getVehiculeId());
-            stmt.setString(2, this.getValeur());
-            ResultSet rs = stmt.executeQuery();
-            if(rs.next()) {
-                this.setId(rs.getInt("id"));
-            }
+            stmt.setInt(2, this.getEquipementId());
+            stmt.executeUpdate();
         } catch (SQLException ex) {
             throw ex;
         } finally {
@@ -39,28 +30,26 @@ public class VehiculeImage {
         }
     }
 
-    public VehiculeImage(int vehiculeId, String valeur) {
+    
+
+    public VehiculeEquipement(int vehiculeId, int equipementId) {
         this.vehiculeId = vehiculeId;
-        this.valeur = valeur;
+        this.equipementId = equipementId;
     }
 
-    public int getId() {
-        return id;
-    }
-    public void setId(int id) {
-        this.id = id;
-    }
+
+
     public int getVehiculeId() {
         return vehiculeId;
     }
     public void setVehiculeId(int vehiculeId) {
         this.vehiculeId = vehiculeId;
     }
-    public String getValeur() {
-        return valeur;
+    public int getEquipementId() {
+        return equipementId;
     }
-    public void setValeur(String valeur) {
-        this.valeur = valeur;
+    public void setEquipementId(int equipementId) {
+        this.equipementId = equipementId;
     }
 
     

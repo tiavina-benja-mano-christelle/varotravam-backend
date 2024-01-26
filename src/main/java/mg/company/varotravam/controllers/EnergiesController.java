@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletRequest;
 import mg.company.varotravam.exceptions.NotAuthorizedException;
-import mg.company.varotravam.models.Transmission;
+import mg.company.varotravam.models.Energie;
 import mg.company.varotravam.utils.Bag;
 import mg.company.varotravam.utils.JWTtokens;
 
@@ -22,14 +22,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
-@RequestMapping("/api/v1/transmissions")
-public class TransmissionController extends MonController {
+@RequestMapping("/api/v1/energies")
+public class EnergiesController extends MonController {
 
     @GetMapping("/pages")
     public ResponseEntity<Bag> getNbPage() {
         Bag bag = new Bag();
         try {
-            bag.setData(new Transmission().getNbPage(null));
+            bag.setData(new Energie().getNbPage(null));
         } catch (Exception e) {
             bag.setError(e.getMessage());
             return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -42,7 +42,7 @@ public class TransmissionController extends MonController {
     public ResponseEntity<Bag> getAll() {
         Bag bag = new Bag();
         try {
-            bag.setData(new Transmission().getAll(null));
+            bag.setData(new Energie().getAll(null));
         } catch (Exception e) {
             bag.setError(e.getMessage());
             return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -54,7 +54,7 @@ public class TransmissionController extends MonController {
     public ResponseEntity<Bag> getAll(@PathVariable int start) {
         Bag bag = new Bag();
         try {
-            bag.setData(new Transmission().getAll(null, start));
+            bag.setData(new Energie().getAll(null, start));
         } catch (Exception e) {
             bag.setError(e.getMessage());
             return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -63,7 +63,7 @@ public class TransmissionController extends MonController {
     }
 
     @PostMapping
-    public ResponseEntity<Bag> add(@RequestBody Transmission transmission, HttpServletRequest request) {
+    public ResponseEntity<Bag> add(@RequestBody Energie transmission, HttpServletRequest request) {
         Bag bag = new Bag();
         try {
             JWTtokens.checkWithRole(request, "admin");
@@ -78,7 +78,7 @@ public class TransmissionController extends MonController {
 
     
     @PutMapping
-    public ResponseEntity<Bag> update(@RequestBody Transmission transmission, HttpServletRequest request) {
+    public ResponseEntity<Bag> update(@RequestBody Energie transmission, HttpServletRequest request) {
         Bag bag = new Bag();
         try {
             JWTtokens.checkWithRole(request, "admin");
@@ -93,7 +93,7 @@ public class TransmissionController extends MonController {
 
     
     @DeleteMapping
-    public ResponseEntity<Bag> delete(@RequestBody Transmission transmission, HttpServletRequest request) {
+    public ResponseEntity<Bag> delete(@RequestBody Energie transmission, HttpServletRequest request) {
         Bag bag = new Bag();
         try {
             JWTtokens.checkWithRole(request, "admin");
