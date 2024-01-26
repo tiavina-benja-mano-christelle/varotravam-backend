@@ -22,7 +22,7 @@ public class Conversation {
     private static final String COLLECTION_NAME = "conversation";
 
     public static void getCollection() {
-        try (MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017")) {
+        try (MongoClient mongoClient = MongoClients.create("mongodb://monorail.proxy.rlwy.net:51470")) {
             // Sélectionner une base de données
             MongoDatabase database = mongoClient.getDatabase(DATABASE_NAME);
 

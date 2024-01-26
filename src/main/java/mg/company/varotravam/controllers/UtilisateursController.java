@@ -52,7 +52,7 @@ public class UtilisateursController {
     public ResponseEntity<Bag> testAdministrateur(HttpServletRequest request) {
         Bag bag = new Bag();
         try {
-            int userId = JWTtokens.checkWithRole(request, "admin");
+            JWTtokens.checkWithRole(request, "admin");
             return new ResponseEntity<Bag>(bag, HttpStatus.OK);
         } catch (Exception e) {
             bag.setError(e.getMessage());
