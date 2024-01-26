@@ -226,7 +226,7 @@ public class Utilisateur {
         }
     }
     //GRAPHE : inscrit ttl
-    public static int getTtlInscrit(Connection connection) throws Exception{
+    public static int getTtlInscrit(Connection connection) throws SQLException{
         boolean wasConnected = true;
         if(connection == null) {
             wasConnected = false;
@@ -234,22 +234,24 @@ public class Utilisateur {
         }
         int ttl = 0;
         try {
-            String sql = "SELECT count(*) AS inscrit from utilisateur;";
+            String sql = "SELECT count(*) AS inscrit from v_utilisateur_client";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 ResultSet rs = stmt.executeQuery();
                 if (rs.next()) {
-                   ttl = rs.getInt("insccrit");
-                    return ttl;
+                   ttl = rs.getInt("inscrit");
+                } else {
+                    throw new SQLException("Nombre d'inscrit introuvable");
                 }
             }
-            throw new Exception("Email inconnue");
-        } catch(Exception ex) {
+        } catch(SQLException ex) {
+            ex.printStackTrace();
             throw ex;
         } finally {
             if (!wasConnected) {
                 connection.close();
             }
         }
+        return ttl;
     }
 
     public int getId() {
