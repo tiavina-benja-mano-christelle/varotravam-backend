@@ -70,6 +70,41 @@ public class Marque {
     }
 
     /**
+     * Récupère la liste des marques les plus vendues
+     * @param connection
+     * @return
+     * @throws SQLException
+     */
+    public Marque getMostSelledOne(Connection connection) throws SQLException {
+        Marque model = null;
+        boolean wasConnected = true;
+
+        if(connection == null) {
+            wasConnected = false;
+            connection = DBConnection.getConnection();
+        }
+
+        String sql = "SELECT marque_id, marque, count(*) nb_vente FROM v_annonce_vendu GROUP BY marque_id, marque ORDER BY nb_vente DESC LIMIT 1";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)){
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                model = new Marque();
+                model.setId(rs.getInt("marque_id"));
+                model.setNom(rs.getString("marque"));
+                model.setNbVente(rs.getInt("nb_vente"));
+            }
+        } catch (SQLException throwables) {
+            throw throwables;
+        } finally {
+            if (!wasConnected) {
+                connection.close();
+            }
+        }
+        return model;
+    }
+
+    /**
      * Récupère le nombre de page necessaire pour afficher toutes le modèle
      * @param connection
      * @return

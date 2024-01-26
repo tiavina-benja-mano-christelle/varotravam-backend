@@ -5,6 +5,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletRequest;
 import mg.company.varotravam.exceptions.NotAuthorizedException;
+import mg.company.varotravam.models.Marque;
+import mg.company.varotravam.models.Modele;
+import mg.company.varotravam.models.StatUtilisateur;
 import mg.company.varotravam.models.Utilisateur;
 import mg.company.varotravam.models.viewmodel.StatViewModel;
 import mg.company.varotravam.utils.Bag;
@@ -87,7 +90,7 @@ public class StatistiquesController {
         Bag bag = new Bag();
         try {
             JWTtokens.checkWithRole(request, "admin");
-            bag.setData(Utilisateur.getTtlInscrit(null));
+            bag.setData(Utilisateur.getInscrit(null));
         } catch (NotAuthorizedException ex) {
             return new ResponseEntity<Bag>(HttpStatus.UNAUTHORIZED);
         } catch (Exception ex) {
@@ -211,6 +214,26 @@ public class StatistiquesController {
     }
 
     /**
+     * Récupère un graphe du nombre d'utilisateur
+     * @param request
+     * @return
+     */
+    @GetMapping("/utilisateurs")
+    public ResponseEntity<Bag> getNombreUtilisateur(@RequestParam(defaultValue = "1", required = false) int annee, HttpServletRequest request) {
+        Bag bag = new Bag();
+        try {
+            JWTtokens.checkWithRole(request, "admin");
+            bag.setData(StatUtilisateur.findData(annee, null)); 
+        } catch (NotAuthorizedException ex) {
+            return new ResponseEntity<Bag>(HttpStatus.UNAUTHORIZED);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<Bag>(bag, HttpStatus.OK);
+    }
+
+    /**
      * Controller pour récupérer le graphe des meilleurs marques vendues
      * @param request
      * @return
@@ -228,6 +251,85 @@ public class StatistiquesController {
         }
         return new ResponseEntity<Bag>(bag, HttpStatus.OK);
     }
+
+    /**
+     * Récupère la marque la plus vendue du site
+     * @param request
+     * @return
+     */
+    @GetMapping("/marque")
+    public ResponseEntity<Bag> getMeilleurMarqueOne(HttpServletRequest request) {
+        Bag bag = new Bag();
+        try {
+            JWTtokens.checkWithRole(request, "admin");
+            bag.setData(new Marque().getMostSelledOne(null)); 
+        } catch (NotAuthorizedException ex) {
+            return new ResponseEntity<Bag>(HttpStatus.UNAUTHORIZED);
+        } catch (Exception ex) {
+            return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<Bag>(bag, HttpStatus.OK);
+    }
+
+    /**
+     * Récupère la marque la plus vendue du site
+     * @param request
+     * @return
+     */
+    @GetMapping("/marques")
+    public ResponseEntity<Bag> getMeilleurMarque(HttpServletRequest request) {
+        Bag bag = new Bag();
+        try {
+            JWTtokens.checkWithRole(request, "admin");
+            bag.setData(new Marque().getMostSelled(null));
+        } catch (NotAuthorizedException ex) {
+            return new ResponseEntity<Bag>(HttpStatus.UNAUTHORIZED);
+        } catch (Exception ex) {
+            return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<Bag>(bag, HttpStatus.OK);
+    }
+    /**
+     * Récupère la marque la plus vendue du site
+     * @param request
+     * @return
+     */
+
+    @GetMapping("/modele")
+    public ResponseEntity<Bag> getMeilleurModeleOne(HttpServletRequest request) {
+        Bag bag = new Bag();
+        try {
+            JWTtokens.checkWithRole(request, "admin");
+            bag.setData(new Modele().getMostSelledOne(null)); 
+        } catch (NotAuthorizedException ex) {
+            return new ResponseEntity<Bag>(HttpStatus.UNAUTHORIZED);
+        } catch (Exception ex) {
+            return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<Bag>(bag, HttpStatus.OK);
+    }
+
+    /**
+     * Récupère la marque la plus vendue du site
+     * @param request
+     * @return
+     */
+    @GetMapping("/modeles")
+    public ResponseEntity<Bag> getMeilleurModele(HttpServletRequest request) {
+        Bag bag = new Bag();
+        try {
+            JWTtokens.checkWithRole(request, "admin");
+            bag.setData(new Modele().getMostSelled(null));
+        } catch (NotAuthorizedException ex) {
+            return new ResponseEntity<Bag>(HttpStatus.UNAUTHORIZED);
+        } catch (Exception ex) {
+            return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<Bag>(bag, HttpStatus.OK);
+    }
+
+
+
 
 
     

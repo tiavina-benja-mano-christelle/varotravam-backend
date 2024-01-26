@@ -74,6 +74,44 @@ public class Modele {
         return models;
     }
 
+
+    /**
+     * Récupère la liste des modeles les plus vendues
+     * @param connection
+     * @return
+     * @throws SQLException
+     */
+    public Modele getMostSelledOne(Connection connection) throws SQLException {
+        Modele model = null;
+        boolean wasConnected = true;
+
+        if(connection == null) {
+            wasConnected = false;
+            connection = DBConnection.getConnection();
+        }
+        String sql = "SELECT modele_id, modele, count(*) nb_vente, marque FROM v_annonce_vendu GROUP BY modele_id, modele, marque ORDER BY count(*) DESC LIMIT 1";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)){
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                model = new Modele();
+                model.setId(rs.getInt("modele_id"));
+                model.setNom(rs.getString("modele"));
+                model.setNbVente(rs.getInt("nb_vente"));
+                model.setMarque(rs.getString("marque"));
+            }
+        } catch (SQLException throwables) {
+            throw throwables;
+        } finally {
+            if (!wasConnected) {
+                connection.close();
+            }
+        }
+        return model;
+    }
+
+
+
     /**
      * Récupère le nombre de page necessaire pour afficher toutes le modèle
      * @param connection
