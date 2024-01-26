@@ -1,4 +1,3 @@
-CREATE SCHEMA IF NOT EXISTS "public";
 
 CREATE SEQUENCE "public".annonce_id_seq START WITH 1 INCREMENT BY 1;
 
@@ -206,12 +205,6 @@ CREATE  TABLE "public".offre (
  );
 
 
-
-CREATE VIEW "public".v_graphe_utilisateur_inscrit AS  SELECT vmy.annee, vmy.mois, count(v.nom) nb_inscrit
-FROM v_utilisateur_client v
-RIGHT JOIN v_month_year vmy ON v.annee_inscription=vmy.annee AND v.mois_inscription=vmy.mois
-GROUP BY vmy.annee, vmy.mois;
-
 CREATE VIEW "public".v_marque_vendu AS  SELECT ma.id AS marque_id,
     ma.nom AS marque,
     count(*) AS nombre_ventes,
@@ -275,6 +268,14 @@ CREATE VIEW "public".v_utilisateur_client AS  SELECT utilisateur.id,
     EXTRACT(month FROM utilisateur.date_inscription) AS mois_inscription
    FROM utilisateur
   WHERE (utilisateur.administrateur IS FALSE);
+
+  
+
+CREATE VIEW "public".v_graphe_utilisateur_inscrit AS  SELECT vmy.annee, vmy.mois, count(v.nom) nb_inscrit
+FROM v_utilisateur_client v
+RIGHT JOIN v_month_year vmy ON v.annee_inscription=vmy.annee AND v.mois_inscription=vmy.mois
+GROUP BY vmy.annee, vmy.mois;
+
 
 
 CREATE VIEW "public".v_vehicule_equipement AS  SELECT ve.vehicule_id,

@@ -10,7 +10,6 @@ public class Utilisateur {
     String email;
     String motDePasse;
     boolean administrateur;
-    //changement
     Date date_inscription;
 
     public static Utilisateur resultSetToUtilisateur(ResultSet rs) throws SQLException {
@@ -225,8 +224,14 @@ public class Utilisateur {
             }
         }
     }
-    //GRAPHE : inscrit ttl
-    public static int getTtlInscrit(Connection connection) throws SQLException{
+    
+    /**
+     * Récupère le nombre d'utilisateur inscrit dans le site
+     * @param connection
+     * @return
+     * @throws SQLException
+     */
+    public static int getInscrit(Connection connection) throws SQLException{
         boolean wasConnected = true;
         if(connection == null) {
             wasConnected = false;
