@@ -13,13 +13,25 @@ public class CORSConfig {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/api/**")
-					.allowedOrigins("https://varotravam-admin.netlify.app/")
+					.allowedOrigins("https://varotravam-admin.netlify.app")
 					.allowedMethods("GET", "POST", "PUT", "DELETE")
 					.allowedHeaders("Authorization", "Content-Type")
 					.allowCredentials(true)
 					.maxAge(3600);
 				registry.addMapping("/authentification/**")
-					.allowedOrigins("https://varotravam-admin.netlify.app/")
+					.allowedOrigins("https://varotravam-admin.netlify.app")
+					.allowedMethods("GET", "POST", "PUT", "DELETE")
+					.allowedHeaders("Authorization", "Content-Type")
+					.allowCredentials(true)
+					.maxAge(3600);
+				registry.addMapping("/api/**")
+					.allowedOrigins("http://localhost:3000")
+					.allowedMethods("GET", "POST", "PUT", "DELETE")
+					.allowedHeaders("Authorization", "Content-Type")
+					.allowCredentials(true)
+					.maxAge(3600);
+				registry.addMapping("/authentification/**")
+					.allowedOrigins("http://localhost:3000")
 					.allowedMethods("GET", "POST", "PUT", "DELETE")
 					.allowedHeaders("Authorization", "Content-Type")
 					.allowCredentials(true)
