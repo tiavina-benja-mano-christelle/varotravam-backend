@@ -16,7 +16,6 @@ import mg.company.varotravam.utils.JWTtokens;
 
 @RestController
 @RequestMapping("/authentification")
-@CrossOrigin("*")
 public class UtilisateursController {
 
     /**
