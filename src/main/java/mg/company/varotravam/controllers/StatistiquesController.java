@@ -8,6 +8,7 @@ import mg.company.varotravam.exceptions.NotAuthorizedException;
 import mg.company.varotravam.models.Marque;
 import mg.company.varotravam.models.Modele;
 import mg.company.varotravam.models.StatUtilisateur;
+import mg.company.varotravam.models.StatVente;
 import mg.company.varotravam.models.Utilisateur;
 import mg.company.varotravam.models.viewmodel.StatViewModel;
 import mg.company.varotravam.utils.Bag;
@@ -185,7 +186,7 @@ public class StatistiquesController {
         Bag bag = new Bag();
         try {
             JWTtokens.checkWithRole(request, "admin");
-            bag.setData(122); //TODO implement la récupération du graphe des meilleurs marques vendues
+            bag.setData(StatVente.findData(annee, null)); 
         } catch (NotAuthorizedException ex) {
             return new ResponseEntity<Bag>(HttpStatus.UNAUTHORIZED);
         } catch (Exception ex) {
@@ -327,10 +328,6 @@ public class StatistiquesController {
         }
         return new ResponseEntity<Bag>(bag, HttpStatus.OK);
     }
-
-
-
-
 
     
 }

@@ -2,6 +2,7 @@ C:\Users\tiavi\Desktop\CLOUD_FINAL_PROJECT\varotravam-backend\src\main\java\mg\c
 C:\Users\tiavi\Desktop\CLOUD_FINAL_PROJECT\varotravam-backend\src\main\java\mg\company\varotravam\models\Conversation.java
 C:\Users\tiavi\Desktop\CLOUD_FINAL_PROJECT\varotravam-backend\src\main\java\mg\company\varotravam\models\User.java
 C:\Users\tiavi\Desktop\CLOUD_FINAL_PROJECT\varotravam-backend\src\main\java\mg\company\varotravam\utils\DBConnection.java
+C:\Users\tiavi\Desktop\CLOUD_FINAL_PROJECT\varotravam-backend\src\main\java\mg\company\varotravam\models\StatVente.java
 C:\Users\tiavi\Desktop\CLOUD_FINAL_PROJECT\varotravam-backend\src\main\java\mg\company\varotravam\models\VehiculeEquipement.java
 C:\Users\tiavi\Desktop\CLOUD_FINAL_PROJECT\varotravam-backend\src\main\java\mg\company\varotravam\controllers\FreinagesController.java
 C:\Users\tiavi\Desktop\CLOUD_FINAL_PROJECT\varotravam-backend\src\main\java\mg\company\varotravam\controllers\StatistiquesController.java
@@ -15,7 +16,6 @@ C:\Users\tiavi\Desktop\CLOUD_FINAL_PROJECT\varotravam-backend\src\main\java\mg\c
 C:\Users\tiavi\Desktop\CLOUD_FINAL_PROJECT\varotravam-backend\src\main\java\mg\company\varotravam\models\Marque.java
 C:\Users\tiavi\Desktop\CLOUD_FINAL_PROJECT\varotravam-backend\src\main\java\mg\company\varotravam\models\Transmission.java
 C:\Users\tiavi\Desktop\CLOUD_FINAL_PROJECT\varotravam-backend\src\main\java\mg\company\varotravam\models\Modele.java
-C:\Users\tiavi\Desktop\CLOUD_FINAL_PROJECT\varotravam-backend\src\main\java\mg\company\varotravam\services\FirebaseStorageService.java
 C:\Users\tiavi\Desktop\CLOUD_FINAL_PROJECT\varotravam-backend\src\main\java\mg\company\varotravam\controllers\MonController.java
 C:\Users\tiavi\Desktop\CLOUD_FINAL_PROJECT\varotravam-backend\src\main\java\mg\company\varotravam\VarotravamApplication.java
 C:\Users\tiavi\Desktop\CLOUD_FINAL_PROJECT\varotravam-backend\src\main\java\mg\company\varotravam\controllers\TransmissionController.java
@@ -40,6 +40,7 @@ C:\Users\tiavi\Desktop\CLOUD_FINAL_PROJECT\varotravam-backend\src\main\java\mg\c
 C:\Users\tiavi\Desktop\CLOUD_FINAL_PROJECT\varotravam-backend\src\main\java\mg\company\varotravam\config\CORSConfig.java
 C:\Users\tiavi\Desktop\CLOUD_FINAL_PROJECT\varotravam-backend\src\main\java\mg\company\varotravam\models\Couleur.java
 C:\Users\tiavi\Desktop\CLOUD_FINAL_PROJECT\varotravam-backend\src\main\java\mg\company\varotravam\models\utils\Graphe.java
+C:\Users\tiavi\Desktop\CLOUD_FINAL_PROJECT\varotravam-backend\src\main\java\mg\company\varotravam\models\StatUtilisateur.java
 C:\Users\tiavi\Desktop\CLOUD_FINAL_PROJECT\varotravam-backend\src\main\java\mg\company\varotravam\models\Commission.java
 C:\Users\tiavi\Desktop\CLOUD_FINAL_PROJECT\varotravam-backend\src\main\java\mg\company\varotravam\models\Freinage.java
 C:\Users\tiavi\Desktop\CLOUD_FINAL_PROJECT\varotravam-backend\src\main\java\mg\company\varotravam\controllers\CouleursController.java

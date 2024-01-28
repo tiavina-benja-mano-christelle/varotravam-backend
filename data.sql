@@ -203,80 +203,7 @@ CREATE  TABLE "public".offre (
 	CONSTRAINT offre_annonce_id_fkey FOREIGN KEY ( annonce_id ) REFERENCES "public".annonce( id )   ,
 	CONSTRAINT offre_utilisateur_id_fkey FOREIGN KEY ( utilisateur_id ) REFERENCES "public".utilisateur( id )   
  );
-
-
-CREATE VIEW "public".v_marque_vendu AS  SELECT ma.id AS marque_id,
-    ma.nom AS marque,
-    count(*) AS nombre_ventes,
-    a.etat
-   FROM (((annonce a
-     JOIN vehicule v ON ((v.id = a.vehicule_id)))
-     JOIN modele m ON ((m.id = v.modele_id)))
-     JOIN marque ma ON ((ma.id = m.marque_id)))
-  GROUP BY ma.nom, ma.id, a.etat
-  ORDER BY (count(*)) DESC;
-
-CREATE VIEW "public".v_meilleur_vendeur AS  SELECT u.id AS utilisateur_id,
-    u.nom,
-    count(*) AS nombre_vente,
-    a.etat
-   FROM (annonce a
-     JOIN utilisateur u ON ((u.id = a.utilisateur_id)))
-  GROUP BY u.nom, u.id, a.etat
-  ORDER BY (count(*)) DESC;
-
-CREATE VIEW "public".v_modele AS  SELECT mo.id,
-    mo.nom,
-    mo.marque_id,
-    ma.nom AS marque,
-    mo.etat
-   FROM (modele mo
-     JOIN marque ma ON ((mo.marque_id = ma.id)));
-
-CREATE VIEW "public".v_modele_vendu AS  SELECT m.id AS modele_id,
-    m.nom AS modele,
-    count(*) AS nombre_ventes,
-    a.etat
-   FROM ((annonce a
-     JOIN vehicule v ON ((v.id = a.vehicule_id)))
-     JOIN modele m ON ((m.id = v.modele_id)))
-  GROUP BY m.nom, m.id, a.etat
-  ORDER BY (count(*)) DESC;
-
-CREATE VIEW "public".v_month_year AS  SELECT mois.id mois
-,
-    mois.valeur,
-    annee.annee
-   FROM mois,
-    annee;
-
-CREATE VIEW "public".v_utilisateur_admin AS  SELECT utilisateur.id,
-    utilisateur.nom,
-    utilisateur.email,
-    utilisateur.mot_de_passe,
-    utilisateur.administrateur
-   FROM utilisateur
-  WHERE (utilisateur.administrateur IS TRUE);
-
-CREATE VIEW "public".v_utilisateur_client AS  SELECT utilisateur.id,
-    utilisateur.nom,
-    utilisateur.email,
-    utilisateur.mot_de_passe,
-    utilisateur.administrateur,
-    utilisateur.date_inscription,
-    EXTRACT(year FROM utilisateur.date_inscription) AS annee_inscription,
-    EXTRACT(month FROM utilisateur.date_inscription) AS mois_inscription
-   FROM utilisateur
-  WHERE (utilisateur.administrateur IS FALSE);
-
-  
-
-CREATE VIEW "public".v_graphe_utilisateur_inscrit AS  SELECT vmy.annee, vmy.mois, count(v.nom) nb_inscrit
-FROM v_utilisateur_client v
-RIGHT JOIN v_month_year vmy ON v.annee_inscription=vmy.annee AND v.mois_inscription=vmy.mois
-GROUP BY vmy.annee, vmy.mois;
-
-
+ 
 
 CREATE VIEW "public".v_vehicule_equipement AS  SELECT ve.vehicule_id,
     array_to_string(array_agg(((e.id || ':'::text) || (e.nom)::text)), ';'::text) AS equipements
@@ -324,7 +251,6 @@ CREATE VIEW "public".v_vehicule AS  SELECT v.id AS vehicule_id,
      LEFT JOIN v_vehicule_equipement vve ON ((vve.vehicule_id = v.id)))
      LEFT JOIN v_vehicule_image vvi ON ((vvi.vehicule_id = v.id)));
 
-     
 CREATE VIEW "public".v_annonce AS  SELECT v.vehicule_id,
     v.kilometrage,
     v.puissance,
@@ -398,7 +324,6 @@ CREATE VIEW "public".v_annonce_favorites AS  SELECT f.utilisateur_id AS utilisat
      JOIN v_vehicule v ON ((a.vehicule_id = v.vehicule_id)))
   WHERE (f.etat >= 5);
 
-  
 CREATE VIEW "public".v_annonce_vendu AS  SELECT v_annonce.vehicule_id,
     v_annonce.kilometrage,
     v_annonce.puissance,
@@ -432,10 +357,182 @@ CREATE VIEW "public".v_annonce_vendu AS  SELECT v_annonce.vehicule_id,
     v_annonce.utilisateur_nom,
     v_annonce.utilisateur_email,
     v_annonce.mot_de_passe,
+    500000 AS commission,
     COALESCE(o.prix_contre, o.prix_propose) AS prix_vente
    FROM (v_annonce
      LEFT JOIN offre o ON (((v_annonce.annonce_id = o.annonce_id) AND (o.etat = 20))))
   WHERE (v_annonce.etat_annonce = 20);
+
+
+CREATE VIEW "public".v_marque_vendu AS  SELECT ma.id AS marque_id,
+    ma.nom AS marque,
+    count(*) AS nombre_ventes,
+    a.etat
+   FROM (((annonce a
+     JOIN vehicule v ON ((v.id = a.vehicule_id)))
+     JOIN modele m ON ((m.id = v.modele_id)))
+     JOIN marque ma ON ((ma.id = m.marque_id)))
+  GROUP BY ma.nom, ma.id, a.etat
+  ORDER BY (count(*)) DESC;
+
+CREATE VIEW "public".v_meilleur_vendeur AS  SELECT u.id AS utilisateur_id,
+    u.nom,
+    count(*) AS nombre_vente,
+    a.etat_annonce AS etat
+   FROM (v_annonce a
+     JOIN utilisateur u ON ((u.id = a.utilisateur_id)))
+  GROUP BY u.nom, u.id, a.etat_annonce
+  ORDER BY (count(*)) DESC;
+
+CREATE VIEW "public".v_meilleur_vente AS  SELECT v1.vehicule_id,
+    v1.kilometrage,
+    v1.puissance,
+    v1.place,
+    v1.porte,
+    v1.consommation,
+    v1.etat_vehicule,
+    v1.transmission_id,
+    v1.energie_id,
+    v1.categorie_id,
+    v1.modele_id,
+    v1.freinage_id,
+    v1.couleur_id,
+    v1.transmission,
+    v1.energie,
+    v1.categorie,
+    v1.modele,
+    v1.freinage,
+    v1.couleur,
+    v1.marque,
+    v1.marque_id,
+    v1.equipements,
+    v1.images,
+    v1.annonce_id,
+    v1.prix_initial,
+    v1.date_publication,
+    v1.date_fermeture,
+    v1.etat_annonce,
+    v1.description,
+    v1.utilisateur_id,
+    v1.utilisateur_nom,
+    v1.utilisateur_email,
+    v1.mot_de_passe,
+    v1.commission,
+    v1.prix_vente,
+    v3.nb_vente
+   FROM ((v_annonce_vendu v1
+     JOIN ( SELECT v_annonce_vendu.utilisateur_id,
+            max(v_annonce_vendu.prix_vente) AS prix_vente
+           FROM v_annonce_vendu
+          GROUP BY v_annonce_vendu.utilisateur_id) v2 ON (((v1.utilisateur_id = v2.utilisateur_id) AND (v1.prix_vente = v2.prix_vente))))
+     JOIN ( SELECT v_annonce_vendu.utilisateur_id,
+            count(v_annonce_vendu.prix_vente) AS nb_vente
+           FROM v_annonce_vendu
+          GROUP BY v_annonce_vendu.utilisateur_id) v3 ON ((v1.utilisateur_id = v3.utilisateur_id)));
+
+CREATE VIEW "public".v_modele AS  SELECT mo.id,
+    mo.nom,
+    mo.marque_id,
+    ma.nom AS marque,
+    mo.etat
+   FROM (modele mo
+     JOIN marque ma ON ((mo.marque_id = ma.id)));
+
+CREATE VIEW "public".v_modele_vendu AS  SELECT m.id AS modele_id,
+    m.nom AS modele,
+    count(*) AS nombre_ventes,
+    a.etat
+   FROM ((annonce a
+     JOIN vehicule v ON ((v.id = a.vehicule_id)))
+     JOIN modele m ON ((m.id = v.modele_id)))
+  GROUP BY m.nom, m.id, a.etat
+  ORDER BY (count(*)) DESC;
+
+CREATE VIEW "public".v_month_year AS  SELECT mois.id AS mois,
+    mois.valeur,
+    annee.annee
+   FROM mois,
+    annee;
+
+CREATE VIEW "public".v_offre AS  SELECT v.vehicule_id,
+    v.kilometrage,
+    v.puissance,
+    v.place,
+    v.porte,
+    v.consommation,
+    v.etat_vehicule,
+    v.transmission_id,
+    v.energie_id,
+    v.categorie_id,
+    v.modele_id,
+    v.freinage_id,
+    v.couleur_id,
+    v.transmission,
+    v.energie,
+    v.categorie,
+    v.modele,
+    v.freinage,
+    v.couleur,
+    v.marque,
+    v.marque_id,
+    v.equipements,
+    v.images,
+    v.annonce_id,
+    v.prix_initial,
+    v.date_publication,
+    v.date_fermeture,
+    v.etat_annonce,
+    v.description,
+    v.utilisateur_id,
+    v.utilisateur_nom,
+    v.utilisateur_email,
+    v.mot_de_passe,
+    o.id AS offre_id,
+    o.prix_propose,
+    o.prix_contre,
+    o.date_offre,
+    o.date_contre,
+    o.etat AS offre_etat,
+    o.utilisateur_id AS utilisateur_offre_id
+   FROM (offre o
+     JOIN v_annonce v ON ((o.annonce_id = v.annonce_id)));
+
+CREATE VIEW "public".v_utilisateur_admin AS  SELECT utilisateur.id,
+    utilisateur.nom,
+    utilisateur.email,
+    utilisateur.mot_de_passe,
+    utilisateur.administrateur
+   FROM utilisateur
+  WHERE (utilisateur.administrateur IS TRUE);
+
+CREATE VIEW "public".v_utilisateur_client AS  SELECT utilisateur.id,
+    utilisateur.nom,
+    utilisateur.email,
+    utilisateur.mot_de_passe,
+    utilisateur.administrateur,
+    utilisateur.date_inscription,
+    EXTRACT(year FROM utilisateur.date_inscription) AS annee_inscription,
+    EXTRACT(month FROM utilisateur.date_inscription) AS mois_inscription
+   FROM utilisateur
+  WHERE (utilisateur.administrateur IS FALSE);
+
+  
+CREATE VIEW "public".v_graphe_utilisateur_inscrit AS  SELECT vmy.annee,
+    vmy.mois,
+    count(v.nom) AS nb_inscrit
+   FROM (v_utilisateur_client v
+     RIGHT JOIN v_month_year vmy ON (((v.annee_inscription = (vmy.annee)::numeric) AND (v.mois_inscription = (vmy.mois)::numeric))))
+  GROUP BY vmy.annee, vmy.mois;
+
+
+CREATE VIEW "public".v_vente AS  SELECT vmy.mois,
+    vmy.annee,
+    count(v.annonce_id) AS nb_vente,
+    sum(COALESCE(v.prix_vente, (0)::numeric)) AS prix_vente,
+    sum(COALESCE(v.commission, 0)) AS commission
+   FROM (v_annonce_vendu v
+     RIGHT JOIN v_month_year vmy ON ((((vmy.mois)::numeric = EXTRACT(month FROM v.date_fermeture)) AND ((vmy.annee)::numeric = EXTRACT(year FROM v.date_fermeture)))))
+  GROUP BY vmy.mois, vmy.annee;
 
 INSERT INTO "public".annee( annee ) VALUES ( 2020);
 INSERT INTO "public".annee( annee ) VALUES ( 2021);
@@ -679,6 +776,23 @@ INSERT INTO "public".vehicule_image( id, vehicule_id, valeur ) VALUES ( 1, 1, 'h
 INSERT INTO "public".vehicule_image( id, vehicule_id, valeur ) VALUES ( 2, 1, 'https://firebasestorage.googleapis.com/v0/b/supple-antenna-379817.appspot.com/o/images%2Fimages.jpeg');
 INSERT INTO "public".vehicule_image( id, vehicule_id, valeur ) VALUES ( 3, 18, 'https://firebasestorage.googleapis.com/v0/b/supple-antenna-379817.appspot.com/o/images%2Fbasketball-nba-logo-wh8ae0q74gl3payt.jpg');
 INSERT INTO "public".vehicule_image( id, vehicule_id, valeur ) VALUES ( 4, 18, 'https://firebasestorage.googleapis.com/v0/b/supple-antenna-379817.appspot.com/o/images%2Fimages.jpeg');
-INSERT INTO "public".annonce( id, prix_initial, date_publication, date_fermeture, etat, description, vehicule_id, utilisateur_id, observation ) VALUES ( 1, 5000000, '2024-01-12', null, 20, 'Voiture de luxe adapté à n''importe quel route', 1, 1, null);
-INSERT INTO "public".annonce( id, prix_initial, date_publication, date_fermeture, etat, description, vehicule_id, utilisateur_id, observation ) VALUES ( 3, 6000000, '2024-01-17', null, 20, 'Voitures spacieuces', 18, 1, 'Demande trop explicite');
+INSERT INTO "public".vehicule_image( id, vehicule_id, valeur ) VALUES ( 5, 2, 'https://firebasestorage.googleapis.com/v0/b/supple-antenna-379817.appspot.com/o/images%2Fbasketball-nba-logo-wh8ae0q74gl3payt.jpg');
+INSERT INTO "public".vehicule_image( id, vehicule_id, valeur ) VALUES ( 6, 3, 'https://firebasestorage.googleapis.com/v0/b/supple-antenna-379817.appspot.com/o/images%2Fimages.jpeg');
+INSERT INTO "public".vehicule_image( id, vehicule_id, valeur ) VALUES ( 7, 2, 'https://firebasestorage.googleapis.com/v0/b/supple-antenna-379817.appspot.com/o/images%2Fbasketball-nba-logo-wh8ae0q74gl3payt.jpg');
+INSERT INTO "public".vehicule_image( id, vehicule_id, valeur ) VALUES ( 8, 3, 'https://firebasestorage.googleapis.com/v0/b/supple-antenna-379817.appspot.com/o/images%2Fimages.jpeg');
+INSERT INTO "public".vehicule_image( id, vehicule_id, valeur ) VALUES ( 9, 4, 'https://firebase²storage.googleapis.com/v0/b/supple-antenna-379817.appspot.com/o/images%2Fbasketball-nba-logo-wh8ae0q74gl3payt.jpg');
+INSERT INTO "public".annonce( id, prix_initial, date_publication, date_fermeture, etat, description, vehicule_id, utilisateur_id, observation ) VALUES ( 3, 6000000, '2024-01-17', '2024-01-27', 20, 'Voitures spacieuces', 18, 1, 'Demande trop explicite');
+INSERT INTO "public".annonce( id, prix_initial, date_publication, date_fermeture, etat, description, vehicule_id, utilisateur_id, observation ) VALUES ( 5, 8000000, '2024-01-27', '2024-01-27', 20, 'Voiture occasion adaptée au petit famille', 3, 3, null);
+INSERT INTO "public".annonce( id, prix_initial, date_publication, date_fermeture, etat, description, vehicule_id, utilisateur_id, observation ) VALUES ( 6, 9500000, '2024-01-27', null, 5, 'Voiture occasion adaptée au petit famille', 4, 4, null);
+INSERT INTO "public".annonce( id, prix_initial, date_publication, date_fermeture, etat, description, vehicule_id, utilisateur_id, observation ) VALUES ( 1, 5000000, '2024-01-12', null, 10, 'Voiture de luxe adapté à n''importe quel route', 1, 1, null);
+INSERT INTO "public".annonce( id, prix_initial, date_publication, date_fermeture, etat, description, vehicule_id, utilisateur_id, observation ) VALUES ( 4, 7000000, '2024-01-27', null, 1, 'Voiture occasion adaptée au petit famille', 2, 2, 'Information non cohérentes');
 INSERT INTO "public".favori( id, utilisateur_id, annonce_id, etat ) VALUES ( 2, 1, 1, 5);
+INSERT INTO "public".offre( id, prix_propose, prix_contre, date_offre, date_contre, etat, utilisateur_id, annonce_id ) VALUES ( 1, 5000000, null, '2024-01-27', null, 5, 7, 1);
+INSERT INTO "public".offre( id, prix_propose, prix_contre, date_offre, date_contre, etat, utilisateur_id, annonce_id ) VALUES ( 2, 6000000, null, '2024-01-27', null, 5, 7, 3);
+INSERT INTO "public".offre( id, prix_propose, prix_contre, date_offre, date_contre, etat, utilisateur_id, annonce_id ) VALUES ( 3, 4000000, null, '2024-01-27', null, 5, 7, 4);
+INSERT INTO "public".offre( id, prix_propose, prix_contre, date_offre, date_contre, etat, utilisateur_id, annonce_id ) VALUES ( 4, 5500000, null, '2024-01-27', null, 5, 7, 5);
+INSERT INTO "public".offre( id, prix_propose, prix_contre, date_offre, date_contre, etat, utilisateur_id, annonce_id ) VALUES ( 5, 6500000, null, '2024-01-27', null, 5, 7, 3);
+INSERT INTO "public".offre( id, prix_propose, prix_contre, date_offre, date_contre, etat, utilisateur_id, annonce_id ) VALUES ( 6, 4000000, null, '2024-01-27', null, 5, 7, 4);
+INSERT INTO "public".offre( id, prix_propose, prix_contre, date_offre, date_contre, etat, utilisateur_id, annonce_id ) VALUES ( 7, 5000000, null, '2024-01-27', null, 5, 7, 3);
+INSERT INTO "public".offre( id, prix_propose, prix_contre, date_offre, date_contre, etat, utilisateur_id, annonce_id ) VALUES ( 8, 3000000, null, '2024-01-27', null, 20, 7, 5);
+INSERT INTO "public".offre( id, prix_propose, prix_contre, date_offre, date_contre, etat, utilisateur_id, annonce_id ) VALUES ( 9, 5000000, null, '2024-01-27', null, 20, 7, 3);

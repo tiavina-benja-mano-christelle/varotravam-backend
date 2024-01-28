@@ -38,8 +38,7 @@ public class Offre {
             wasConnected = false;
             connection = DBConnection.getConnection();
         }
-        //TODO: update the viewName
-        String sql = "SELECT * FROM <viewName> WHERE id=?";
+        String sql = "SELECT * FROM v_offre WHERE id=?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) 
         {
             stmt.setInt(1, id);
@@ -71,8 +70,7 @@ public class Offre {
             wasConnected = false;
             connection = DBConnection.getConnection();
         }
-        //TODO: update the viewName
-        String sql = "SELECT * FROM <viewName> WHERE utilisateur_id=? AND annonce_id=? ORDER BY etat";
+        String sql = "SELECT * FROM v_offre WHERE utilisateur_id=? AND annonce_id=? ORDER BY etat";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) 
         {
             stmt.setInt(1, utilisateurID);
@@ -105,7 +103,7 @@ public class Offre {
             connection = DBConnection.getConnection();
         }
         //TODO: update the viewName
-        String sql = "SELECT * FROM <viewName> WHERE utilisateur_id=? ORDER BY etat";
+        String sql = "SELECT * FROM v_offre WHERE utilisateur_id=? ORDER BY etat";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) 
         {
             stmt.setInt(1, utilisateurID);
@@ -136,7 +134,7 @@ public class Offre {
             connection = DBConnection.getConnection();
         }
         //TODO: update the viewName
-        String sql = "SELECT * FROM <viewName> WHERE utilisateur_id=? ORDER BY etat";
+        String sql = "SELECT * FROM v_offre WHERE utilisateur_offre_id=? ORDER BY etat";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) 
         {
             stmt.setInt(1, utilisateurID);
