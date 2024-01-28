@@ -51,9 +51,10 @@ public class DBConnection {
             System.err.println("Le pilote PostgreSQL n'a pas été trouvé.");
         } catch (SQLException e) {
             System.err.println("Erreur lors de la connexion à la base de données PostgreSQL.");
+            System.err.println(e.getMessage());
             throw e;
         } catch (Exception e) {
-            System.err.println("CONNECTION_ERROR");
+            System.err.println(e.getMessage());
         }
     }
     
