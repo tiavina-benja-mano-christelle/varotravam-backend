@@ -152,6 +152,7 @@ public class AnnoncesController {
         } catch (NotAuthorizedException e) {
             return new ResponseEntity<Bag>(bag, HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
+            e.printStackTrace();
             bag.setError(e.getMessage());
             return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);
         }

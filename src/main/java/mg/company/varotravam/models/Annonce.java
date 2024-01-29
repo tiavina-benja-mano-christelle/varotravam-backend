@@ -139,7 +139,7 @@ public class Annonce {
             stmt.setInt(3, this.getId());
             stmt.executeUpdate();
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            throw throwables;
         } finally {
             if (!wasConnected) {
                 connection.close();
@@ -167,7 +167,7 @@ public class Annonce {
             stmt.setInt(2, this.getId());
             stmt.executeUpdate();
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            throw throwables;
         } finally {
             if (!wasConnected) {
                 connection.close();
@@ -222,7 +222,7 @@ public class Annonce {
             stmt.setInt(2, this.getId());
             stmt.executeUpdate();
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            throw throwables;
         } finally {
             if (!wasConnected) {
                 connection.close();
