@@ -107,7 +107,7 @@ public class Favori {
         }
         String sql = "INSERT INTO public.favori (id, utilisateur_id, annonce_id, etat)" +
         "VALUES (DEFAULT, ?, ?, DEFAULT)" +
-        "ON CONFLICT (utilisateur_id, annonce_id) DO UPDATE SET etat = 5" +
+        "ON CONFLICT (utilisateur_id, annonce_id) DO UPDATE SET etat = 5 " +
         "RETURNING id";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) 
