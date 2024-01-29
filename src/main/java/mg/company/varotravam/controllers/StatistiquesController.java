@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletRequest;
 import mg.company.varotravam.exceptions.NotAuthorizedException;
+import mg.company.varotravam.models.Commission;
 import mg.company.varotravam.models.Marque;
 import mg.company.varotravam.models.Modele;
 import mg.company.varotravam.models.StatUtilisateur;
@@ -55,7 +56,7 @@ public class StatistiquesController {
         Bag bag = new Bag();
         try {
             JWTtokens.checkWithRole(request, "admin");
-            bag.setData(23.4); //TODO implement la récupération de la commission
+            bag.setData(Commission.getCurrentCommission(null)); 
         } catch (NotAuthorizedException ex) {
             return new ResponseEntity<Bag>(HttpStatus.UNAUTHORIZED);
         } catch (Exception ex) {

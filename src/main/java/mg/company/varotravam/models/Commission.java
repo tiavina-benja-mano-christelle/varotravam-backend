@@ -153,15 +153,14 @@ public class Commission {
      * @return la commission actuelle
      * @throws Exception
      */
-    public Commission getCurrentCommission(Connection connection) throws Exception {
+    public static Commission getCurrentCommission(Connection connection) throws Exception {
             Commission c = null;
             boolean wasConnected = true;
             if (connection == null) {
                 wasConnected = false;
                 connection = DBConnection.getConnection();
             }
-            String sql = "SELECT * FROM public.commission\n" +
-                    "ORDER BY commission_date DESC LIMIT 1";
+            String sql = "SELECT * FROM v_actual_commission";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 ResultSet rs = stmt.executeQuery();
                 if (rs.next()) {

@@ -46,6 +46,39 @@ public class StatVente {
         return models;
     }
 
+    /**
+     * Récupère un graphe du nombre d'utilisateur
+     * @param id
+     * @param connection
+     * @return
+     * @throws SQLException
+     */
+    public static Integer findTotal(int annee, Connection connection) throws Exception {
+        Integer models = null;
+        boolean wasConnected = true;
+        if(connection == null) {
+            wasConnected = false;
+            connection = DBConnection.getConnection();
+        }
+        try {
+            String sql = "SELECT sum(commission) commission FROM v_vente";
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+                stmt.setInt(1, annee);
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    models = rs.getInt("commission");
+                } 
+            } 
+        } catch(Exception ex) {
+            throw ex;
+        } finally {
+            if (!wasConnected) {
+                connection.close();
+            }
+        }
+        return models;
+    }
+
     public int getMois() {
         return mois;
     }
