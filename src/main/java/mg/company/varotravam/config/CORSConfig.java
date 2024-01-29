@@ -12,7 +12,7 @@ public class CORSConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
             .allowedMethods("*")
             .allowedHeaders("*")
-            .allowedOrigins("https://varotravam-admin.netlify.app")
+            .allowedOriginPatterns("*")
             .allowCredentials(true);
     }
 }
