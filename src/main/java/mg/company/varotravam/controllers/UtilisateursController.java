@@ -16,7 +16,7 @@ import mg.company.varotravam.utils.JWTtokens;
 
 @RestController
 @RequestMapping("/authentification")
-@CrossOrigin("*")
+@CrossOrigin
 public class UtilisateursController {
 
     /**
@@ -92,7 +92,6 @@ public class UtilisateursController {
      * @return
      */
     @PostMapping("/administrateur")
-    @CrossOrigin("*")
     public ResponseEntity<Bag> connectionAdministrateur(@RequestBody Utilisateur utilisateur) {
         Bag bag = new Bag();
         try {
