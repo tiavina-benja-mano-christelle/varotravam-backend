@@ -25,25 +25,25 @@ public class MessagesController {
     private static final String DATABASE_NAME = "varotravam";
     private static final String COLLECTION_NAME = "conversation";
 
-    @GetMapping
-    public String read(@RequestParam int annonceId) {
-        try (MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017")) {
-            MongoDatabase database = mongoClient.getDatabase(DATABASE_NAME);
-            MongoCollection<Document> collection = database.getCollection(COLLECTION_NAME);
-            Conversation.read(collection, annonceId, 1);
-        }
-        return null;
-    }
+    // @GetMapping
+    // public String read(@RequestParam int annonceId) {
+    //     try (MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017")) {
+    //         MongoDatabase database = mongoClient.getDatabase(DATABASE_NAME);
+    //         MongoCollection<Document> collection = database.getCollection(COLLECTION_NAME);
+    //         Conversation.read(collection, annonceId, 1);
+    //     }
+    //     return null;
+    // }
 
-    @GetMapping("/{acheteurId}")
-    public String read(@RequestParam int annonceId, @PathVariable int acheteurId) {
-        try (MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017")) {
-            MongoDatabase database = mongoClient.getDatabase(DATABASE_NAME);
-            MongoCollection<Document> collection = database.getCollection(COLLECTION_NAME);
-            Conversation.read(collection, 1, 1);
-        }
-        return null;
-    }
+    // @GetMapping("/{acheteurId}")
+    // public String read(@RequestParam int annonceId, @PathVariable int acheteurId) {
+    //     try (MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017")) {
+    //         MongoDatabase database = mongoClient.getDatabase(DATABASE_NAME);
+    //         MongoCollection<Document> collection = database.getCollection(COLLECTION_NAME);
+    //         Conversation.read(collection, 1, 1);
+    //     }
+    //     return null;
+    // }
 
     @PostMapping("/acheteur")
     public void addAcheteurMessage(@RequestBody Conversation conversation) {

@@ -48,25 +48,24 @@ public class Conversation {
         System.out.println("Annonce créée avec succès.");
     }
 
-    public static void read(MongoCollection<Document> collection, int annonceId) {
-        System.out.println("Lecture de l'annonce avec critères :");
-        collection.find(Filters.and(
-                Filters.eq("annonce_id", annonceId)
-        )).forEach((Document documentResult) -> System.out.println(documentResult.toJson()));
-    }
+    // public static void read(MongoCollection<Document> collection, int annonceId) {
+    //     System.out.println("Lecture de l'annonce avec critères :");
+    //     collection.find(Filters.and(
+    //             Filters.eq("annonce_id", annonceId)
+    //     )).forEach((Document documentResult) -> System.out.println(documentResult.toJson()));
+    // }
 
-    public static void read(MongoCollection<Document> collection, int annonceId, int acheteurId) {
-        System.out.println("Lecture de l'annonce avec critères :");
-        collection.find(Filters.and(
-                Filters.eq("annonce_id", annonceId),
-                Filters.eq("acheteur_id", acheteurId)
-        )).forEach((Document documentResult) -> System.out.println(documentResult.toJson()));
-    }
+    // public static void read(MongoCollection<Document> collection, int annonceId, int acheteurId) {
+    //     System.out.println("Lecture de l'annonce avec critères :");
+    //     collection.find(Filters.and(
+    //             Filters.eq("annonce_id", annonceId),
+    //             Filters.eq("acheteur_id", acheteurId)
+    //     )).forEach((Document documentResult) -> System.out.println(documentResult.toJson()));
+    // }
 
     public void addAcheteurMessage(MongoCollection<Document> collection) {
         System.out.println("Ajout d'un message à l'annonce :");
 
-        // Ajouter un nouveau message à la liste des messages
         collection.updateOne(
             Filters.and(
                 Filters.eq("annonce_id", this.getAnnonceId()),
