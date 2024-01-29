@@ -15,15 +15,15 @@ public class CORSConfig {
 				registry.addMapping("/api/**")
 					.allowedOriginPatterns("*")
 					.allowedMethods("GET", "POST", "PUT", "DELETE")
-					.allowedHeaders("*")
-					.allowCredentials(true)
-					.maxAge(3600);
+					.allowedHeaders("*");
+					// .allowCredentials(true)
+					// .maxAge(3600);
 				registry.addMapping("/authentification/**")
 					.allowedOriginPatterns("*")
 					.allowedMethods("GET", "POST", "PUT", "DELETE")
-					.allowedHeaders("*")
-					.allowCredentials(true)
-					.maxAge(3600);
+					.allowedHeaders("*");
+					// .allowCredentials(true)
+					// .maxAge(3600);
 			}
 		};
 	}
