@@ -9,30 +9,14 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-public class CORSConfig {
+public class CORSConfig implements WebMvcConfigurer {
 
-	@Bean
-	public CorsFilter corsFilter() {
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		CorsConfiguration config = new CorsConfiguration();
-
-		config.addAllowedOrigin("*");
-		config.addAllowedMethod("*");
-		config.addAllowedHeader("*");
-		source.registerCorsConfiguration("/**", config);
-		return new CorsFilter(source);
-	}
-
-    // @Bean
-	// public WebMvcConfigurer corsConfigurer() {
-	// 	return new WebMvcConfigurer() {
-	// 		@Override
-	// 		public void addCorsMappings(CorsRegistry registry) {
-	// 			registry.addMapping("/**")
-	// 				.allowedOrigins("https://varotravam-admin.netlify.app")
-	// 				.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS");
-	// 		}
-	// 	};
-	// }
-
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+            .allowedMethods("*")
+            .allowedHeaders("*")
+            .allowedOrigins("https://varotravam-admin.netlify.app") // Remplacez par l'URL de votre application React
+            .allowCredentials(true);
+    }
 }
