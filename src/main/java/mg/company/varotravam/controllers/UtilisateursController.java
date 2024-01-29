@@ -92,6 +92,7 @@ public class UtilisateursController {
      * @return
      */
     @PostMapping("/administrateur")
+    @CrossOrigin("*")
     public ResponseEntity<Bag> connectionAdministrateur(@RequestBody Utilisateur utilisateur) {
         Bag bag = new Bag();
         try {
