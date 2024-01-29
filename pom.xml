@@ -6,7 +6,7 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.2.1</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath/>
 	</parent>
 	<groupId>mg.company</groupId>
 	<artifactId>varotravam</artifactId>
@@ -65,11 +65,11 @@
 			<artifactId>google-cloud-storage</artifactId>
 			<version>1.113.9</version>
 		</dependency>
-		<!-- <dependency>
+		<dependency>
 			<groupId>org.mongodb</groupId>
 			<artifactId>mongo-java-driver</artifactId>
 			<version>3.12.10</version>
-		</dependency> -->
+		</dependency>
 	</dependencies>
 
 
