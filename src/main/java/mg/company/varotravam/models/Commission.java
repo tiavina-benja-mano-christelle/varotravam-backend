@@ -154,26 +154,51 @@ public class Commission {
      * @throws Exception
      */
     public static Commission getCurrentCommission(Connection connection) throws Exception {
-            Commission c = null;
-            boolean wasConnected = true;
-            if (connection == null) {
-                wasConnected = false;
-                connection = DBConnection.getConnection();
+        Commission c = null;
+        boolean wasConnected = true;
+        if (connection == null) {
+            wasConnected = false;
+            connection = DBConnection.getConnection();
+        }
+        String sql = "SELECT * FROM v_actual_commission";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                c = new Commission();
+                c.setId(rs.getInt("id"));
+                c.setCommission_date(rs.getDate("commission_date"));
+                c.setValeur(rs.getDouble("valeur"));
+                System.out.println(c.getValeur());
             }
-            String sql = "SELECT * FROM v_actual_commission";
-            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-                ResultSet rs = stmt.executeQuery();
-                if (rs.next()) {
-                    c = new Commission();
-                    c.setId(rs.getInt("id"));
-                    c.setCommission_date(rs.getDate("commission_date "));
-                    c.setValeur(rs.getDouble("valeur"));
-                }
-                return c;
-            } catch (Exception e) {e.printStackTrace();
-            } finally {if (!wasConnected) {connection.close();}}
             return c;
-    }
+        } catch (Exception e) {e.printStackTrace();
+        } finally {if (!wasConnected) {connection.close();}}
+        return c;
+}
+
+/**
+ * Récupère le chiffre d'affaire totale obtenue
+ * @param connection la connection
+ * @return la commission actuelle
+ * @throws Exception
+ */
+public static Integer getChiffreAffaire(Connection connection) throws Exception {
+        Integer model = null;
+        boolean wasConnected = true;
+        if (connection == null) {
+            wasConnected = false;
+            connection = DBConnection.getConnection();
+        }
+        String sql = "SELECT sum(commission) chiffre_affaire FROM v_annonce_vendu";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                model = rs.getInt("chiffre_affaire");
+            }
+        } catch (Exception e) {e.printStackTrace();
+        } finally {if (!wasConnected) {connection.close();}}
+        return model;
+}
 
     /**
      * récupéré les commissions par ordre décroissant

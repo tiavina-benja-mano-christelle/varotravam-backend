@@ -208,7 +208,7 @@ public class StatistiquesController {
         Bag bag = new Bag();
         try {
             JWTtokens.checkWithRole(request, "admin");
-            bag.setData(122); //TODO implement la récupération du graphe des meilleurs marques vendues
+            bag.setData(Commission.getChiffreAffaire(null)); 
         } catch (NotAuthorizedException ex) {
             return new ResponseEntity<Bag>(HttpStatus.UNAUTHORIZED);
         } catch (Exception ex) {
