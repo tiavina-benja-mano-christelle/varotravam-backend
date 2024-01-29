@@ -1,5 +1,6 @@
 package mg.company.varotravam.controllers;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 // import org.bson.Document;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +16,7 @@ import mg.company.varotravam.models.Conversation;
 
 @RestController
 @RequestMapping("/api/v1/messages")
+@CrossOrigin
 public class MessagesController {
     // private static final String CONNECTION_STRING = "monorail.proxy.rlwy.net:51470";
     // private static final String DATABASE_NAME = "varotravam";
