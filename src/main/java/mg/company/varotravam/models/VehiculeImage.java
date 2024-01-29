@@ -22,7 +22,7 @@ public class VehiculeImage {
             wasConnected = false;
             connection = DBConnection.getConnection();
         }
-        String sql = "INSERT INTO \"public\".vehicule_image( vehicule_id, equipement_id) VALUES ( ?, ? ) RETURNING id";
+        String sql = "INSERT INTO \"public\".vehicule_image( vehicule_id, valeur) VALUES ( ?, ? ) RETURNING id";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, this.getVehiculeId());
             stmt.setString(2, this.getValeur());
