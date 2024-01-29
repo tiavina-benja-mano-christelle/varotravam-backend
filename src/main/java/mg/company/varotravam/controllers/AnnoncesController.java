@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import mg.company.varotravam.exceptions.NotAuthorizedException;
 import mg.company.varotravam.models.Annonce;
 import mg.company.varotravam.models.Favori;
+import mg.company.varotravam.models.utils.Filter;
 import mg.company.varotravam.utils.Bag;
 import mg.company.varotravam.utils.DBConnection;
 import mg.company.varotravam.utils.JWTtokens;
@@ -180,9 +181,15 @@ public class AnnoncesController {
      * @return
      */
     @PostMapping("/filtrer")
-    public ResponseEntity<Bag> annonceActifFiltrer() {
+    public ResponseEntity<Bag> annonceActifFiltrer(@RequestBody Filter filter) {
         Bag bag = new Bag();
-        //TODO: implementer la récuperation des annonces disponible avec les filtres
+        try {
+            bag.setData(new Annonce().filtrer(filter, null));
+        } catch (Exception e) {
+            e.printStackTrace();
+            bag.setError(e.getMessage());
+            return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         return new ResponseEntity<>(bag, HttpStatus.OK);
     }
 

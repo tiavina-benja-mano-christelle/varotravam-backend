@@ -44,7 +44,15 @@ public class Offre {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             while(rs.next()) {
-                //TODO: setting for the result
+                model = new Offre();
+                model.setId(rs.getInt("id"));
+                model.setPrixPropose(rs.getDouble("prix_propose"));
+                model.setPrixContre(rs.getDouble("prix_contre"));
+                model.setDateOffre(rs.getDate("date_offre"));
+                model.setDateContre(rs.getDate("date_contre"));
+                model.setEtat(rs.getInt("etat"));
+                model.setUtilisateurId(rs.getInt("utilisateur_id"));
+                model.setAnnonceId(rs.getInt("annonce_id"));
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -77,7 +85,16 @@ public class Offre {
             stmt.setInt(2, annonceID);
             ResultSet rs = stmt.executeQuery();
             while(rs.next()) {
-                //TODO: setting for the result
+                Offre model = new Offre();
+                model.setId(rs.getInt("id"));
+                model.setPrixPropose(rs.getDouble("prix_propose"));
+                model.setPrixContre(rs.getDouble("prix_contre"));
+                model.setDateOffre(rs.getDate("date_offre"));
+                model.setDateContre(rs.getDate("date_contre"));
+                model.setEtat(rs.getInt("etat"));
+                model.setUtilisateurId(rs.getInt("utilisateur_id"));
+                model.setAnnonceId(rs.getInt("annonce_id"));
+                models.add(model);
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -102,17 +119,25 @@ public class Offre {
             wasConnected = false;
             connection = DBConnection.getConnection();
         }
-        //TODO: update the viewName
         String sql = "SELECT * FROM v_offre WHERE utilisateur_id=? ORDER BY etat";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) 
         {
             stmt.setInt(1, utilisateurID);
             ResultSet rs = stmt.executeQuery();
             while(rs.next()) {
-                //TODO: setting for the result
+                Offre model = new Offre();
+                model.setId(rs.getInt("id"));
+                model.setPrixPropose(rs.getDouble("prix_propose"));
+                model.setPrixContre(rs.getDouble("prix_contre"));
+                model.setDateOffre(rs.getDate("date_offre"));
+                model.setDateContre(rs.getDate("date_contre"));
+                model.setEtat(rs.getInt("etat"));
+                model.setUtilisateurId(rs.getInt("utilisateur_id"));
+                model.setAnnonceId(rs.getInt("annonce_id"));
+                models.add(model);
             }
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            throw throwables;
         } finally {
             if (!wasConnected) {
                 connection.close();
@@ -133,17 +158,25 @@ public class Offre {
             wasConnected = false;
             connection = DBConnection.getConnection();
         }
-        //TODO: update the viewName
         String sql = "SELECT * FROM v_offre WHERE utilisateur_offre_id=? ORDER BY etat";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) 
         {
             stmt.setInt(1, utilisateurID);
             ResultSet rs = stmt.executeQuery();
             while(rs.next()) {
-                //TODO: setting for the result
+                Offre model = new Offre();
+                model.setId(rs.getInt("id"));
+                model.setPrixPropose(rs.getDouble("prix_propose"));
+                model.setPrixContre(rs.getDouble("prix_contre"));
+                model.setDateOffre(rs.getDate("date_offre"));
+                model.setDateContre(rs.getDate("date_contre"));
+                model.setEtat(rs.getInt("etat"));
+                model.setUtilisateurId(rs.getInt("utilisateur_id"));
+                model.setAnnonceId(rs.getInt("annonce_id"));
+                models.add(model);
             }
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            throw throwables;
         } finally {
             if (!wasConnected) {
                 connection.close();

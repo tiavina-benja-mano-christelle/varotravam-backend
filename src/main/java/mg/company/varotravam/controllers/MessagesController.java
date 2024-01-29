@@ -1,5 +1,8 @@
 package mg.company.varotravam.controllers;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,57 +13,53 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-
+import jakarta.servlet.http.HttpServletRequest;
+import mg.company.varotravam.exceptions.NotAuthorizedException;
 import mg.company.varotravam.models.Conversation;
+import mg.company.varotravam.repositories.ConversationRepositories;
+import mg.company.varotravam.utils.Bag;
+import mg.company.varotravam.utils.JWTtokens;
 
 @RestController
 @RequestMapping("/api/v1/messages")
 @CrossOrigin
 public class MessagesController {
-    private static final String CONNECTION_STRING = "monorail.proxy.rlwy.net:51470";
-    private static final String DATABASE_NAME = "varotravam";
-    private static final String COLLECTION_NAME = "conversation";
+    
+    @Autowired
+    private ConversationRepositories repo; 
 
-    // @GetMapping
-    // public String read(@RequestParam int annonceId) {
-    //     try (MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017")) {
-    //         MongoDatabase database = mongoClient.getDatabase(DATABASE_NAME);
-    //         MongoCollection<Document> collection = database.getCollection(COLLECTION_NAME);
-    //         Conversation.read(collection, annonceId, 1);
-    //     }
-    //     return null;
-    // }
-
-    // @GetMapping("/{acheteurId}")
-    // public String read(@RequestParam int annonceId, @PathVariable int acheteurId) {
-    //     try (MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017")) {
-    //         MongoDatabase database = mongoClient.getDatabase(DATABASE_NAME);
-    //         MongoCollection<Document> collection = database.getCollection(COLLECTION_NAME);
-    //         Conversation.read(collection, 1, 1);
-    //     }
-    //     return null;
-    // }
-
-    @PostMapping("/acheteur")
-    public void addAcheteurMessage(@RequestBody Conversation conversation) {
-        try (MongoClient mongoClient = MongoClients.create(CONNECTION_STRING)) {
-            MongoDatabase database = mongoClient.getDatabase(DATABASE_NAME);
-            MongoCollection<Document> collection = database.getCollection(COLLECTION_NAME);
-            conversation.addAcheteurMessage(collection);
+    @PostMapping
+    public ResponseEntity<Bag> addMessage(@RequestBody Conversation conversation, HttpServletRequest request) {
+        Bag bag = new Bag();
+        try {
+            JWTtokens.checkWithRole(request, "user");
+            repo.save(conversation);
+        } catch (NotAuthorizedException e) {
+            return new ResponseEntity<Bag>(HttpStatus.UNAUTHORIZED);
+        }   catch (Exception e) {
+            e.printStackTrace();
+            bag.setError(e.getMessage());
+            return new ResponseEntity<Bag>(bag, HttpStatus.OK);
         }
+        return new ResponseEntity<Bag>(HttpStatus.OK);
     }
 
-    @PostMapping("/vendeur")
-    public void addVendeurMessage(@RequestBody Conversation conversation) {
-        try (MongoClient mongoClient = MongoClients.create(CONNECTION_STRING)) {
-            MongoDatabase database = mongoClient.getDatabase(DATABASE_NAME);
-            MongoCollection<Document> collection = database.getCollection(COLLECTION_NAME);
-            conversation.addVendeurMessage(collection);
+    @GetMapping("/{conversationId}")
+    public ResponseEntity<Bag> getMessage(@PathVariable int conversationId, HttpServletRequest request) {
+        Bag bag = new Bag();
+        try {
+            JWTtokens.checkWithRole(request, "user");
+            bag.setData(repo.findById(conversationId));
+        } catch (NotAuthorizedException e) {
+            return new ResponseEntity<Bag>(HttpStatus.UNAUTHORIZED);
+        }   catch (Exception e) {
+            bag.setError(e.getMessage());
+            return new ResponseEntity<Bag>(bag, HttpStatus.OK);
         }
+        return new ResponseEntity<Bag>(HttpStatus.OK);
     }
+
+
+
 
 }

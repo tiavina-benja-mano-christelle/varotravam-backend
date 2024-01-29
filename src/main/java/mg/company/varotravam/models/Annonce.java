@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import mg.company.varotravam.models.utils.Filter;
 import mg.company.varotravam.utils.DBConnection;
 
 public class Annonce {
@@ -29,16 +30,91 @@ public class Annonce {
     Vehicule vehicule;
     Utilisateur proprietaire;
 
+    /**
+     * Récupère la liste des annonces via des filtres
+     * @param marques
+     * @param categories
+     * @param prixMin
+     * @param prixMax
+     * @param transmission
+     * @param annee
+     * @param connection
+     * @return
+     */
+    public List<Annonce> filtrer(Filter filter, Connection connection) throws Exception {
+        return this.filtrer(filter.getMarques(), filter.getCategories(), filter.getPrixMin(), filter.getPrixMax(), filter.getTransmission(), filter.getAnnee(), connection);
+    }
 
-    private String queryFilter(int[] marques, int[] categories) {
-        String sql = "SELECT * FROM v_annonce WHERE 1=1";
-        if (marques.length != 0) {
-            sql += " AND marque_id IN (";
-            for (int i = 0; i < marques.length; i++) {
-                int marque = marques[i];
-                if (i+1 != marques.length) sql += ", ";
+
+    /**
+     * Récupère la liste des annonces via des filtres
+     * @param marques
+     * @param categories
+     * @param prixMin
+     * @param prixMax
+     * @param transmission
+     * @param annee
+     * @param connection
+     * @return
+     */
+    public List<Annonce> filtrer(List<Integer> marques, List<Integer> categories, int prixMin, int prixMax, int transmission, int annee, Connection connection) throws Exception {
+        String sql = queryFilter(marques, categories, prixMin, prixMax, transmission, annee);
+        List<Annonce> models = new ArrayList<>();
+        boolean wasConnected = true;
+        
+        if(connection == null) {
+            wasConnected = false;
+            connection = DBConnection.getConnection();
+        }
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            System.out.println(sql);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Annonce model = new Annonce();
+                model.setId(rs.getInt("annonce_id"));
+                model.setPrixInitial(rs.getDouble("prix_initial"));
+                model.setDatePublication(rs.getDate("date_publication"));
+                model.setDateFermeture(rs.getDate("date_fermeture"));
+                model.setDescription(rs.getString("description"));
+                model.setVehiculeId(rs.getInt("vehicule_id"));
+                model.setEtat(rs.getInt("etat_annonce"));
+                model.setVehicule(Vehicule.resultSetToVehicule(rs));
+                model.setProprietaire(Utilisateur.resultSetToUtilisateur(rs));
+                models.add(model);
+            }
+        } catch (SQLException ex) {
+            throw ex;
+        } finally {
+            if (!wasConnected) {
+                connection.close();
             }
         }
+        return models;
+    }
+
+    private String queryFilter(List<Integer> marques, List<Integer> categories, int prixMin, int prixMax, int transmission, int annee) {
+        String sql = "SELECT * FROM v_annonce WHERE 1=1";
+        if (marques.size() != 0) {
+            sql += " AND marque_id IN (";
+            for (int i = 0; i < marques.size(); i++) {
+                int marque = marques.get(i);
+                sql += marque;
+                if (i+1 != marques.size()) sql += ", ";
+            }
+            sql += ") ";
+        }
+        if (categories.size() != 0) {
+            sql += " AND categorie_id IN (";
+            for (int i = 0; i < categories.size(); i++) {
+                int categorie = categories.get(i);
+                sql += categorie;
+                if (i+1 != categories.size()) sql += ", ";
+            }
+            sql += ") ";
+        }
+        sql += String.format(" AND prix_initial BETWEEN %s AND %s ", prixMin, prixMax);
+        if (transmission != 0) sql += String.format(" AND transmission_id=%s ", transmission);
+        if (annee != 0) sql += String.format(" AND annee=%s ", annee);
         return sql;
     }
 
@@ -185,6 +261,7 @@ public class Annonce {
                 model.setEtat(rs.getInt("etat_annonce"));
                 model.setVehicule(Vehicule.resultSetToVehicule(rs));
                 model.setProprietaire(Utilisateur.resultSetToUtilisateur(rs));
+                models.add(model);
             }
         } catch (SQLException ex) {
             throw ex;
