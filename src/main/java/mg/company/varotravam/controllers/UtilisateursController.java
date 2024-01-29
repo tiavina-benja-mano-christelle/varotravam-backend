@@ -16,6 +16,7 @@ import mg.company.varotravam.utils.JWTtokens;
 
 @RestController
 @RequestMapping("/authentification")
+// @CrossOrigin("https://varotravam-admin.netlify.app")
 public class UtilisateursController {
 
     /**
