@@ -16,7 +16,7 @@ public class CORSConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
             .allowedMethods("*")
             .allowedHeaders("*")
-            .allowedOrigins("https://varotravam-admin.netlify.app") // Remplacez par l'URL de votre application React
+            .allowedOrigins("https://varotravam-admin.netlify.app")
             .allowCredentials(true);
     }
 }
