@@ -75,7 +75,7 @@ public class Message {
     public Message() {
     }
     
-    public Vector<Message> getAllMessage(Connection connection) throws ClassNotFoundException, SQLException{
+    public Vector<Message> getMessageByUtilisateur(int id, Connection connection) throws ClassNotFoundException, SQLException{
         Vector<Message> messages = new Vector<>();
         boolean wasConnected = true;
 
@@ -84,9 +84,50 @@ public class Message {
             connection = DBConnection.getConnection();
         }
 
-        String sql = "select * from message";
+        String sql = "select * from v_message where id_client = ? OR id_vendeur = ?";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+            preparedStatement.setInt(1, id);
+            preparedStatement.setInt(2, id);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    Message message = new Message();
+                    message.setId(resultSet.getInt("id"));
+                    message.setId_vendeur(resultSet.getInt("id_vendeur"));
+                    message.setId_cient(resultSet.getInt("id_cient"));
+                    message.setId_envoyeur(resultSet.getInt("id_envoyeur"));
+                    message.setId_annonce(resultSet.getInt("id_annonce"));
+                    message.setDate_envoye(resultSet.getDate("date_envoye"));
+                    message.setMessage(resultSet.getString("message"));
+                    messages.add(message);
+                }
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            if (!wasConnected) {
+                connection.close();
+            }
+        }
+        return messages;
+    }
+
+    public Vector<Message> getMessageByIdClient(int id_client , int id_vendeur , Connection connection) throws ClassNotFoundException, SQLException{
+        Vector<Message> messages = new Vector<>();
+        boolean wasConnected = true;
+
+        if(connection == null) {
+            wasConnected = false;
+            connection = DBConnection.getConnection();
+        }
+
+        String sql = "select * from message where id_vendeur = ? and id_client= ? or id_client = ? and id_vendeur= ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+            preparedStatement.setInt(1, id_client);
+            preparedStatement.setInt(2, id_vendeur);
+            preparedStatement.setInt(3, id_client);
+            preparedStatement.setInt(4, id_vendeur);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     Message message = new Message();
