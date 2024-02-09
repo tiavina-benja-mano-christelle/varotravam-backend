@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -74,12 +75,12 @@ public class MessagesController {
     // }
 
     @GetMapping("/all-message")
-    public ResponseEntity<Bag> enAttente(HttpServletRequest request) {
+    public ResponseEntity<Bag> messageUtilisateur(HttpServletRequest request) {
         Bag bag = new Bag();
         try {
             int id_utilisateur = JWTtokens.checkWithRole(request, "admin");
-            Vector<Message> annonces = new Message().getMessageByUtilisateur(id_utilisateur, null);
-            bag.setData(annonces); 
+            Vector<Message> messages = new Message().getMessageByUtilisateur(id_utilisateur, null);
+            bag.setData(messages); 
         } catch (NotAuthorizedException e) {
             return new ResponseEntity<Bag>(HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
@@ -89,4 +90,22 @@ public class MessagesController {
         return new ResponseEntity<>(bag, HttpStatus.OK);
     }
 
+    @GetMapping("/message")
+    public ResponseEntity<Bag> message(HttpServletRequest request, 
+                                        @RequestParam int id_client,
+                                        @RequestParam int id_vendeur
+                                        ) {
+        Bag bag = new Bag();
+        try {
+            JWTtokens.checkWithRole(request, "admin");
+            Vector<Message> messages = new Message().getMessageByIdClient(id_client, id_vendeur, null);
+            bag.setData(messages); 
+        } catch (NotAuthorizedException e) {
+            return new ResponseEntity<Bag>(HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
+            bag.setError(e.getMessage());
+            return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(bag, HttpStatus.OK);
+    }
 }
