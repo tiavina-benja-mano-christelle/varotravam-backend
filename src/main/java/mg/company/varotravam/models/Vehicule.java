@@ -43,9 +43,13 @@ public class Vehicule {
      */
     public void create(Connection connection) throws SQLException {
         this.save(connection);
-        for (int equipementId : this.getEquipementsId()) {
-            VehiculeEquipement ve = new VehiculeEquipement(this.getId(), equipementId);
-            ve.save(connection);
+        try {
+            for (int equipementId : this.getEquipementsId()) {
+                VehiculeEquipement ve = new VehiculeEquipement(this.getId(), equipementId);
+                ve.save(connection);
+            }
+        } catch(Exception ex) {
+
         }
         for (String image : this.getImages()) {
             VehiculeImage vi = new VehiculeImage(this.getId(), image);

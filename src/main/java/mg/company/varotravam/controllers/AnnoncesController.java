@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -145,6 +146,8 @@ public class AnnoncesController {
     @PostMapping
     public ResponseEntity<Bag> create(@RequestBody Annonce annonce, HttpServletRequest request) {
         Bag bag = new Bag();
+        System.out.println("Créating");
+        System.out.println(request.getHeader("Authorization"));
         try {
             int utilisateurID = JWTtokens.checkWithRole(request, "user");
             annonce.setUtilisateurId(utilisateurID);
@@ -183,6 +186,7 @@ public class AnnoncesController {
      */
     @PostMapping("/filtrer")
     public ResponseEntity<Bag> annonceActifFiltrer(@RequestBody Filter filter) {
+        System.out.println();
         Bag bag = new Bag();
         try {
             bag.setData(new Annonce().filtrer(filter, null));

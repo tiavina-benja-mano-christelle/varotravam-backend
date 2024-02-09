@@ -67,7 +67,8 @@ public class Annonce {
             connection = DBConnection.getConnection();
         }
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            System.out.println(sql);
+            stmt.setInt(1, DISPONIBLE);
+            System.out.println(stmt);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 Annonce model = new Annonce();
@@ -93,7 +94,7 @@ public class Annonce {
     }
 
     private String queryFilter(List<Integer> marques, List<Integer> categories, int prixMin, int prixMax, int transmission, int annee) {
-        String sql = "SELECT * FROM v_annonce WHERE 1=1";
+        String sql = "SELECT * FROM v_annonce WHERE etat_annonce=?";
         if (marques.size() != 0) {
             sql += " AND marque_id IN (";
             for (int i = 0; i < marques.size(); i++) {

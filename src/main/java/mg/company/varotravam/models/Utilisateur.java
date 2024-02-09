@@ -204,6 +204,7 @@ public class Utilisateur {
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setString(1, valeur);
                 stmt.setString(2, valeur);
+                System.out.println(stmt);
                 ResultSet rs = stmt.executeQuery();
                 if (rs.next()) {
                     model = new Utilisateur();

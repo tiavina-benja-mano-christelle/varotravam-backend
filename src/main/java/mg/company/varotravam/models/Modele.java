@@ -34,7 +34,95 @@ public class Modele {
         this.nom = nom;
     }
     
+
     
+    
+    
+
+    /**
+     * Récupère la liste des modeles les plus vendues
+     * @param connection
+     * @return
+     * @throws SQLException
+     */
+    public List<Modele> getByMarques(Connection connection, Integer[] idMarques) throws SQLException {
+        List<Modele> models = new ArrayList<>();
+        boolean wasConnected = true;
+
+        if(connection == null) {
+            wasConnected = false;
+            connection = DBConnection.getConnection();
+        }
+        if (idMarques.length == 0) throw new SQLException("Aucune Marque");
+        String sql = "SELECT * FROM v_modele WHERE etat=? AND marque_id IN (%s)";
+        String idMarquesValues = "";
+        for (int i = 0; i < idMarques.length; i++) {
+            idMarquesValues += "?";
+            if (idMarques.length - 1 != i) idMarquesValues += ",";
+        }
+        sql = String.format(sql, idMarquesValues);
+        try (PreparedStatement stmt = connection.prepareStatement(sql)){
+            int index = 2;
+            stmt.setInt(1, DISPONIBLE);
+            for (int i = 0; i < idMarques.length; i++) {
+                stmt.setInt(index, idMarques[i]);
+                index++;
+            }
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Modele model = new Modele();
+                model.setId(rs.getInt("id"));
+                model.setNom(rs.getString("nom"));
+                model.setMarque(rs.getString("marque"));
+                model.setMarqueId(rs.getInt("marque_id"));
+                models.add(model);
+            }
+        } catch (SQLException throwables) {
+            throw throwables;
+        } finally {
+            if (!wasConnected) {
+                connection.close();
+            }
+        }
+        return models;
+    }
+
+    /**
+     * Récupère la liste des modeles d'une marque
+     * @param connection
+     * @return
+     * @throws SQLException
+     */
+    public List<Modele> getByMarque(Connection connection, int idMarque) throws SQLException {
+        List<Modele> models = new ArrayList<>();
+        boolean wasConnected = true;
+
+        if(connection == null) {
+            wasConnected = false;
+            connection = DBConnection.getConnection();
+        }
+        String sql = "SELECT * FROM v_modele WHERE etat=? AND marque_id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)){
+            stmt.setInt(1, DISPONIBLE);
+            stmt.setInt(2, idMarque);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Modele model = new Modele();
+                model.setId(rs.getInt("id"));
+                model.setNom(rs.getString("nom"));
+                model.setMarque(rs.getString("marque"));
+                model.setMarqueId(rs.getInt("marque_id"));
+                models.add(model);
+            }
+        } catch (SQLException throwables) {
+            throw throwables;
+        } finally {
+            if (!wasConnected) {
+                connection.close();
+            }
+        }
+        return models;
+    }
     
 
     /**

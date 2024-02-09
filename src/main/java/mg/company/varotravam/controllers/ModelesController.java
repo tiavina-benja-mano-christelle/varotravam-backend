@@ -1,5 +1,8 @@
 package mg.company.varotravam.controllers;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -22,6 +25,18 @@ import mg.company.varotravam.utils.JWTtokens;
 @RequestMapping("/api/v1/modeles")
 @CrossOrigin
 public class ModelesController extends MonController {
+
+    @PostMapping("/marques")
+    public  ResponseEntity<Bag> getByMarques(@RequestBody Integer[] idMarques) {
+        Bag bag = new Bag();
+        try {
+            bag.setData(new Modele().getByMarques(null, idMarques));
+        } catch (Exception e) {
+            bag.setData(new ArrayList<>());
+        }
+        return new ResponseEntity<Bag>(bag, HttpStatus.OK);
+    }
+    
      
     @GetMapping("/pages")
     public ResponseEntity<Bag> getNbPage() {
@@ -69,14 +84,12 @@ public class ModelesController extends MonController {
      */
     @GetMapping("/marque/{marqueId}")
     public ResponseEntity<Bag> get(HttpServletRequest request, @PathVariable int marqueId) {
-        // try {
-        //     bag.setData(new Categorie().getAllCategorie(null));
-        //     if (1==1) throw new SQLException();
-        //     throw new ClassNotFoundException();
-        // } catch (ClassNotFoundException | SQLException e) {
-        //     bag.setError(e.getMessage());
-        //     return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);
-        // }
+        try {
+            bag.setData(new Modele().getByMarque(null, marqueId));
+        } catch ( Exception e) {
+            bag.setError(e.getMessage());
+            return new ResponseEntity<Bag>(bag, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         return new ResponseEntity<Bag>(bag, HttpStatus.OK);
     }
 

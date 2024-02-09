@@ -70,6 +70,9 @@ public class UtilisateursController {
      */
     @PostMapping("/utilisateur")
     public ResponseEntity<Bag> connectionUtilisateur(@RequestBody Utilisateur utilisateur) {
+        System.out.println(utilisateur.getEmail());
+        System.out.println(utilisateur.getNom());
+        System.out.println(utilisateur.getMotDePasse());
         Bag bag = new Bag();
         try {
             Utilisateur actuelUtilisateur = Utilisateur.verifierUtilisateur(utilisateur.getNom(), utilisateur.getMotDePasse());

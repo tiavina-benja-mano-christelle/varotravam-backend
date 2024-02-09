@@ -18,12 +18,12 @@ import java.util.Properties;
  */
 public class DBConnection {
     
-    private String URL = "jdbc:postgresql://viaduct.proxy.rlwy.net:54669/railway";
-    private String USER = "postgres";
-    private String PASSWORD = "F4G3gBFDC2B3fG2F3bcg**F32dFB4-bE";
-    // private String URL = "jdbc:postgresql://localhost:5432/varotravamv2";
-    // private String USER = "varotravam";
-    // private String PASSWORD = "varotravam";
+    // private String URL = "jdbc:postgresql://viaduct.proxy.rlwy.net:54669/railway";
+    // private String USER = "postgres";
+    // private String PASSWORD = "F4G3gBFDC2B3fG2F3bcg**F32dFB4-bE";
+    private String URL = "jdbc:postgresql://localhost:5432/varotravamv2";
+    private String USER = "varotravam";
+    private String PASSWORD = "varotravam";
     private String DRIVER = "org.postgresql.Driver";
     private Connection connection = null;
     

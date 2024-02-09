@@ -5,13 +5,16 @@ import java.util.List;
 
 public class Filter {
     private List<Integer> marques = new ArrayList<>();
+    private List<Integer> modeles = new ArrayList<>();
+    private List<Integer> energies = new ArrayList<>();
     private List<Integer> categories = new ArrayList<>();
+    private List<Integer> transmissions = new ArrayList<>();
+    private List<Integer> couleurs = new ArrayList<>();
     private int prixMin = 0;
     private int prixMax = Integer.MAX_VALUE;
     private int transmission = 0;
     private int annee = 0;
 
-    
     public List<Integer> getMarques() {
         return marques;
     }
@@ -47,6 +50,30 @@ public class Filter {
     }
     public void setAnnee(int annee) {
         this.annee = annee;
+    }
+    public List<Integer> getTransmissions() {
+        return transmissions;
+    }
+    public void setTransmissions(List<Integer> transmissions) {
+        this.transmissions = transmissions;
+    }
+    public List<Integer> getModeles() {
+        return modeles;
+    }
+    public void setModeles(List<Integer> modeles) {
+        this.modeles = modeles;
+    }
+    public List<Integer> getEnergies() {
+        return energies;
+    }
+    public void setEnergies(List<Integer> energies) {
+        this.energies = energies;
+    }
+    public List<Integer> getCouleurs() {
+        return couleurs;
+    }
+    public void setCouleurs(List<Integer> couleurs) {
+        this.couleurs = couleurs;
     }
 
     
